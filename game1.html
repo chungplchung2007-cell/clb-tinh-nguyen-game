@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Game 1: Ghép Hình - Ban Truyền thông & IT</title>
+  <meta name="description" content="Mini-game ghép hình Jigsaw Puzzle của Ban Truyền thông & IT - CLB Tình Nguyện Trường Y." />
+
+  <!-- Google Fonts: Be Vietnam Pro & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/style.css" />
+
+  <style>
+    .puzzle-board-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      width: 100%;
+    }
+
+    .puzzle-grid-slots {
+      width: 100%;
+      max-width: 440px;
+      aspect-ratio: 1 / 1;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      gap: 4px;
+      background: #f0ece9;
+      border: 4px solid var(--primary-light);
+      border-radius: var(--radius-md);
+      padding: 4px;
+      box-shadow: var(--shadow-md);
+      position: relative;
+    }
+
+    .puzzle-slot {
+      border: 1.5px dashed #d1c7c2;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      transition: var(--transition);
+      cursor: pointer;
+    }
+
+    .puzzle-slot.highlight {
+      border-color: var(--accent);
+      background: rgba(255, 140, 56, 0.2);
+    }
+
+    .puzzle-slot.solved {
+      border: none;
+    }
+
+    .puzzle-slot-index {
+      font-size: 13px;
+      color: #b0a5a0;
+      font-weight: 700;
+      pointer-events: none;
+    }
+
+    .puzzle-tray-box {
+      width: 100%;
+      background: #fff3ee;
+      border-radius: var(--radius-md);
+      border: 1.5px solid var(--border-color);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .puzzle-tray-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .puzzle-pieces-tray {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      min-height: 86px;
+      align-items: center;
+      padding: 6px;
+    }
+
+    .puzzle-piece {
+      width: 76px;
+      height: 76px;
+      border-radius: 8px;
+      border: 2.5px solid white;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.16);
+      cursor: grab;
+      position: relative;
+      touch-action: none;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      background-size: 228px 228px; /* 3 x 76px */
+    }
+
+    .puzzle-piece:active {
+      cursor: grabbing;
+      transform: scale(1.08);
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
+      z-index: 10;
+    }
+
+    .puzzle-piece.selected {
+      outline: 3px solid var(--primary);
+      transform: scale(1.08);
+      box-shadow: 0 0 16px rgba(230, 57, 70, 0.6);
+    }
+  </style>
+</head>
+<body>
+
+  <div id="app-container">
+    <!-- Top Bar -->
+    <header class="top-bar">
+      <a href="index.html" class="club-brand" title="Về trang chủ">
+        <div class="club-logo-badge">❤</div>
+        <div class="club-title-wrap">
+          <h1 id="brand-name">CLB TÌNH NGUYỆN TRƯỜNG Y</h1>
+          <p>Ban Truyền thông - IT</p>
+        </div>
+      </a>
+
+      <div class="top-actions">
+        <button class="btn-icon" id="btn-sound-toggle" title="Bật/Tắt âm thanh" aria-label="Âm thanh">
+          <span id="sound-icon">🔊</span>
+        </button>
+        <a href="index.html#section-select" class="btn-icon" title="Chọn ban khác" aria-label="Chọn ban">
+          <span>📋</span>
+        </a>
+      </div>
+    </header>
+
+    <!-- Khu vực chơi game -->
+    <main class="game-arena">
+      <div class="game-hud">
+        <div class="hud-title">💻 Thử Thách Ghép Hình (Jigsaw)</div>
+        <div class="hud-stats">
+          <span class="hud-pill" id="puzzle-level-indicator">Ảnh 1 / 2</span>
+          <span class="hud-pill" id="puzzle-progress">Mảnh: 0/9</span>
+        </div>
+      </div>
+
+      <div class="puzzle-board-container">
+        <!-- Lưới 9 ô ghép -->
+        <div class="puzzle-grid-slots" id="puzzle-slots"></div>
+
+        <!-- Khay chứa mảnh ghép -->
+        <div class="puzzle-tray-box">
+          <div class="puzzle-tray-header">
+            <span>KHAY MẢNH GHÉP (Kéo thả hoặc Nhấn chọn mảnh rồi nhấn vào ô)</span>
+            <button id="btn-shuffle" class="btn-secondary" style="padding: 4px 12px; font-size: 11px;">Xáo lại</button>
+          </div>
+          <div class="puzzle-pieces-tray" id="puzzle-tray"></div>
+        </div>
+      </div>
+
+      <div class="btn-group-dual" style="margin-top: 10px;">
+        <a href="index.html#section-select" class="btn-secondary">Quay lại chọn ban</a>
+        <a href="index.html" class="btn-secondary">Về trang chủ</a>
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal thông báo kết quả -->
+  <div id="game-modal" class="modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-icon" id="modal-icon">🎉</div>
+      <h3 class="modal-title" id="modal-title">Bạn đã chiến thắng 🎉</h3>
+      <p class="modal-message" id="modal-desc">Chúc mừng bạn đã hoàn thành thử thách.</p>
+      
+      <div class="modal-stat-box" id="modal-stat-box"></div>
+
+      <div class="modal-buttons">
+        <button id="btn-modal-replay" class="btn-primary">Chơi lại</button>
+        <a href="index.html" class="btn-secondary">Về trang chủ</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/bg-remover.js"></script>
+
+  <script>
+    class PuzzleGameApp {
+      constructor() {
+        this.gridSize = 3;
+        this.totalPieces = 9;
+        this.currentImageIndex = 0;
+        this.imageSources = window.PUZZLE_IMAGES || ["assets/puzzle/puzzle1.jpg", "assets/puzzle/puzzle2.jpg"];
+        this.currentImage = new Image();
+        this.solvedPieces = 0;
+        this.selectedPieceIndex = null;
+        this.slots = [];
+        this.piecesData = [];
+
+        this.slotsContainer = document.getElementById('puzzle-slots');
+        this.trayContainer = document.getElementById('puzzle-tray');
+        this.progressLabel = document.getElementById('puzzle-progress');
+        this.levelLabel = document.getElementById('puzzle-level-indicator');
+
+        document.getElementById('btn-shuffle').addEventListener('click', () => {
+          window.sound.playClick();
+          this.shuffleTray();
+        });
+
+        document.getElementById('btn-modal-replay').addEventListener('click', () => {
+          document.getElementById('game-modal').classList.remove('active');
+          this.loadImage(0);
+        });
+      }
+
+      init() {
+        this.loadImage(0);
+      }
+
+      loadImage(index) {
+        this.currentImageIndex = index;
+        this.levelLabel.textContent = `Ảnh ${this.currentImageIndex + 1} / ${this.imageSources.length}`;
+        
+        this.currentImage = new Image();
+        this.currentImage.crossOrigin = "anonymous";
+        this.currentImage.onload = () => this.buildBoard();
+        this.currentImage.onerror = () => {
+          // Fallback nếu ảnh không tải được
+          this.currentImage.onload = () => this.buildBoard();
+          this.currentImage.src = "assets/volunteer.jpg";
+        };
+        this.currentImage.src = this.imageSources[this.currentImageIndex];
+      }
+
+      buildBoard() {
+        this.solvedPieces = 0;
+        this.selectedPieceIndex = null;
+        this.updateProgress();
+
+        this.slotsContainer.innerHTML = '';
+        this.trayContainer.innerHTML = '';
+        this.slots = [];
+        this.piecesData = [];
+
+        // Tạo 9 ô slot
+        for (let i = 0; i < this.totalPieces; i++) {
+          const slot = document.createElement('div');
+          slot.className = 'puzzle-slot';
+          slot.dataset.index = i;
+
+          const span = document.createElement('span');
+          span.className = 'puzzle-slot-index';
+          span.textContent = i + 1;
+          slot.appendChild(span);
+
+          // Sự kiện Kéo thả (Drag & Drop)
+          slot.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            slot.classList.add('highlight');
+          });
+
+          slot.addEventListener('dragleave', () => {
+            slot.classList.remove('highlight');
+          });
+
+          slot.addEventListener('drop', (e) => {
+            e.preventDefault();
+            slot.classList.remove('highlight');
+            const pieceIdx = parseInt(e.dataTransfer.getData('text/plain'), 10);
+            this.tryPlacePiece(pieceIdx, i);
+          });
+
+          // Sự kiện Chạm chọn (Tap to place)
+          slot.addEventListener('click', () => {
+            if (this.selectedPieceIndex !== null) {
+              this.tryPlacePiece(this.selectedPieceIndex, i);
+            }
+          });
+
+          this.slotsContainer.appendChild(slot);
+          this.slots.push({ el: slot, solved: false });
+        }
+
+        // Tạo 9 mảnh ghép
+        for (let i = 0; i < this.totalPieces; i++) {
+          const row = Math.floor(i / this.gridSize);
+          const col = i % this.gridSize;
+
+          const pieceEl = document.createElement('div');
+          pieceEl.className = 'puzzle-piece';
+          pieceEl.draggable = true;
+          pieceEl.dataset.index = i;
+
+          pieceEl.style.backgroundImage = `url("${this.currentImage.src}")`;
+          pieceEl.style.backgroundSize = `300% 300%`;
+          pieceEl.style.backgroundPosition = `${(col / (this.gridSize - 1)) * 100}% ${(row / (this.gridSize - 1)) * 100}%`;
+
+          pieceEl.addEventListener('dragstart', (e) => {
+            e.dataTransfer.setData('text/plain', i);
+            this.selectPiece(i);
+          });
+
+          pieceEl.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.selectPiece(i);
+          });
+
+          this.piecesData.push({ id: i, el: pieceEl, inSlot: null });
+        }
+
+        this.shuffleTray();
+      }
+
+      selectPiece(index) {
+        window.sound.playClick();
+        this.selectedPieceIndex = index;
+        document.querySelectorAll('.puzzle-piece').forEach(p => p.classList.remove('selected'));
+        const piece = this.piecesData[index];
+        if (piece && piece.el) {
+          piece.el.classList.add('selected');
+        }
+      }
+
+      shuffleTray() {
+        this.trayContainer.innerHTML = '';
+        const unplaced = this.piecesData.filter(p => p.inSlot === null);
+        for (let i = unplaced.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [unplaced[i], unplaced[j]] = [unplaced[j], unplaced[i]];
+        }
+        unplaced.forEach(p => this.trayContainer.appendChild(p.el));
+      }
+
+      tryPlacePiece(pieceIdx, slotIdx) {
+        if (isNaN(pieceIdx) || isNaN(slotIdx)) return;
+        const piece = this.piecesData[pieceIdx];
+        const slot = this.slots[slotIdx];
+
+        if (!piece || !slot || slot.solved) return;
+
+        if (pieceIdx === slotIdx) {
+          // Đặt đúng vị trí!
+          window.sound.playSnap();
+          slot.solved = true;
+          piece.inSlot = slotIdx;
+
+          slot.el.innerHTML = '';
+          slot.el.classList.add('solved');
+          piece.el.style.width = '100%';
+          piece.el.style.height = '100%';
+          piece.el.style.borderRadius = '0';
+          piece.el.style.boxShadow = 'none';
+          piece.el.style.border = 'none';
+          piece.el.draggable = false;
+          piece.el.classList.remove('selected');
+          slot.el.appendChild(piece.el);
+
+          this.selectedPieceIndex = null;
+          this.solvedPieces++;
+          this.updateProgress();
+
+          if (this.solvedPieces >= this.totalPieces) {
+            this.handleLevelWin();
+          }
+        } else {
+          // Đặt sai vị trí
+          window.sound.playHit();
+          piece.el.style.animation = 'gentleBounce 0.4s ease';
+          setTimeout(() => { piece.el.style.animation = ''; }, 400);
+          if (this.trayContainer && !this.trayContainer.contains(piece.el)) {
+            this.trayContainer.appendChild(piece.el);
+          }
+        }
+      }
+
+      updateProgress() {
+        this.progressLabel.textContent = `Mảnh: ${this.solvedPieces} / ${this.totalPieces}`;
+      }
+
+      handleLevelWin() {
+        window.sound.playWin();
+        const modal = document.getElementById('game-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalDesc = document.getElementById('modal-desc');
+        const modalStat = document.getElementById('modal-stat-box');
+        const replayBtn = document.getElementById('btn-modal-replay');
+
+        if (this.currentImageIndex < this.imageSources.length - 1) {
+          // Còn ảnh tiếp theo
+          modalTitle.textContent = "Xuất sắc! 🎉";
+          modalDesc.textContent = `Bạn đã hoàn thiện bức ảnh số ${this.currentImageIndex + 1}! Hãy cùng tiếp tục sang bức ảnh tiếp theo nào!`;
+          modalStat.innerHTML = `<div>Tiến độ: ${this.currentImageIndex + 1} / ${this.imageSources.length} ảnh</div>`;
+          replayBtn.textContent = "Sang ảnh tiếp theo ➔";
+          replayBtn.onclick = () => {
+            modal.classList.remove('active');
+            this.loadImage(this.currentImageIndex + 1);
+          };
+          modal.classList.add('active');
+        } else {
+          // Hoàn thành tất cả các ảnh
+          modalTitle.textContent = "Bạn đã chiến thắng 🎉";
+          modalDesc.textContent = "Chúc mừng bạn đã xuất sắc ghép hoàn thiện tất cả các ấn phẩm của Ban Truyền thông & IT!";
+          modalStat.innerHTML = `<div>Tư duy không gian & Kỹ năng kiên nhẫn: 10/10 ✨</div>`;
+          replayBtn.textContent = "Chơi lại từ đầu";
+          replayBtn.onclick = () => {
+            modal.classList.remove('active');
+            this.loadImage(0);
+          };
+          modal.classList.add('active');
+        }
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const app = new PuzzleGameApp();
+      app.init();
+    });
+  </script>
+</body>
+</html>

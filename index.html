@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Tuyển Thành Viên - CLB Tình Nguyện Trường Y</title>
+  <meta name="description" content="Trải nghiệm và khám phá 4 ban chuyên môn của CLB Tình Nguyện Trường Y qua các mini-game thú vị." />
+
+  <!-- Google Fonts: Be Vietnam Pro & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet" />
+
+  <!-- Stylesheet chung -->
+  <link rel="stylesheet" href="css/style.css" />
+
+  <style>
+    /* CSS Riêng cho Trang chủ index.html */
+    .hero-container {
+      margin: 16px 20px;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+      background: white;
+      border: 2px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .hero-banner-wrap {
+      width: 100%;
+      height: clamp(240px, 40vw, 420px);
+      position: relative;
+      overflow: hidden;
+      background: #ffebe5;
+    }
+
+    .hero-banner-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s ease;
+    }
+
+    .hero-container:hover .hero-banner-img {
+      transform: scale(1.02);
+    }
+
+    .hero-content {
+      padding: 28px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 16px;
+      background: white;
+    }
+
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 18px;
+      border-radius: var(--radius-full);
+      background: #fff0eb;
+      border: 1.5px solid var(--border-color);
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .hero-title {
+      font-family: var(--font-title);
+      font-size: clamp(26px, 4.5vw, 42px);
+      font-weight: 900;
+      color: var(--primary-dark);
+      line-height: 1.2;
+      text-transform: uppercase;
+    }
+
+    .hero-desc {
+      font-size: clamp(14px, 2vw, 16px);
+      color: var(--text-main);
+      max-width: 680px;
+      line-height: 1.6;
+      font-weight: 500;
+    }
+
+    .btn-lets-play {
+      font-family: var(--font-title);
+      font-size: clamp(20px, 3.5vw, 26px);
+      font-weight: 800;
+      padding: 16px 48px;
+      border-radius: var(--radius-full);
+      border: none;
+      color: white;
+      background: linear-gradient(135deg, #e63946, #ff7a18);
+      box-shadow: 0 8px 24px rgba(230, 57, 70, 0.45);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      transition: var(--transition);
+      letter-spacing: 1px;
+      position: relative;
+      overflow: hidden;
+      animation: pulsePlay 2.2s infinite ease-in-out;
+      text-decoration: none;
+      margin-top: 6px;
+    }
+
+    .btn-lets-play:hover {
+      transform: translateY(-4px) scale(1.04);
+      box-shadow: 0 14px 32px rgba(230, 57, 70, 0.6);
+      background: linear-gradient(135deg, #ff4d5a, #ff8c38);
+    }
+
+    @keyframes pulsePlay {
+      0%, 100% { box-shadow: 0 8px 24px rgba(230, 57, 70, 0.45); }
+      50% { box-shadow: 0 12px 36px rgba(230, 57, 70, 0.7); transform: scale(1.02); }
+    }
+
+    /* Phần Chọn Ban */
+    .section-select {
+      padding: 24px 20px 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .section-header {
+      text-align: center;
+    }
+
+    .section-subtitle {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 6px;
+    }
+
+    .section-title {
+      font-family: var(--font-title);
+      font-size: clamp(24px, 4vw, 34px);
+      font-weight: 800;
+      color: var(--primary-dark);
+    }
+
+    .departments-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 20px;
+      width: 100%;
+    }
+
+    .dept-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      border: 2px solid var(--border-color);
+      overflow: hidden;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+      position: relative;
+    }
+
+    .dept-card:hover {
+      transform: translateY(-8px);
+      border-color: var(--primary);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .dept-card-media {
+      height: 150px;
+      width: 100%;
+      position: relative;
+      overflow: hidden;
+      background: #fff3ee;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .dept-card-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+
+    .dept-card:hover .dept-card-media img {
+      transform: scale(1.08);
+    }
+
+    .dept-card-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(255, 255, 255, 0.94);
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .dept-card-content {
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1;
+    }
+
+    .dept-name {
+      font-family: var(--font-title);
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .dept-card:hover .dept-name {
+      color: var(--primary);
+    }
+
+    .dept-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      flex: 1;
+    }
+
+    .dept-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 10px;
+      border-top: 1px dashed #ffe0d6;
+      margin-top: 6px;
+    }
+
+    .dept-game-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .dept-play-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-full);
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      box-shadow: 0 3px 8px rgba(230, 57, 70, 0.3);
+      transition: var(--transition);
+    }
+
+    .dept-card:hover .dept-play-btn {
+      transform: scale(1.15) rotate(5deg);
+    }
+
+    /* Modal Giới thiệu Ban */
+    .intro-modal-media {
+      width: 100%;
+      height: 170px;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      background: #fff0eb;
+      margin-bottom: 10px;
+    }
+
+    .intro-modal-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .intro-guide-box {
+      background: #fff8f5;
+      border-left: 4px solid var(--primary);
+      padding: 10px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      text-align: left;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="app-container">
+    <!-- TOP BAR -->
+    <header class="top-bar">
+      <a href="index.html" class="club-brand" title="Về trang chủ">
+        <div class="club-logo-badge">❤</div>
+        <div class="club-title-wrap">
+          <h1 id="brand-name">CLB TÌNH NGUYỆN TRƯỜNG Y</h1>
+          <p id="brand-slogan">Tuổi trẻ dấn thân • Sẻ chia yêu thương</p>
+        </div>
+      </a>
+
+      <div class="top-actions">
+        <button class="btn-icon" id="btn-sound-toggle" title="Bật/Tắt âm thanh" aria-label="Âm thanh">
+          <span id="sound-icon">🔊</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- MÀN 1: TRANG CHỦ -->
+    <section class="hero-container" id="section-home">
+      <div class="hero-banner-wrap">
+        <img id="home-banner-img" class="hero-banner-img" src="assets/hero-banner.jpg" alt="CLB Tình Nguyện Trường Y Tuyển Thành Viên" />
+      </div>
+
+      <div class="hero-content">
+        <div class="hero-tag">
+          <span>✨</span> ĐỢT TUYỂN THÀNH VIÊN GEN MỚI
+        </div>
+
+        <h2 class="hero-title" id="home-title">
+          KHOÁC ÁO ĐỎ<br />
+          <span style="background: linear-gradient(135deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+            NỐI VÒNG TAY LỚN
+          </span>
+        </h2>
+
+        <p class="hero-desc" id="home-desc">
+          Chào mừng bạn đến với mái nhà <strong>CLB Tình Nguyện Trường Y</strong>! 
+          Hãy bấm nút bên dưới để tham gia chuỗi thử thách mini-game và tìm ra ban phù hợp nhất với đam mê của bạn.
+        </p>
+
+        <!-- Nút LET'S PLAY bắt buộc giữ nguyên tiếng Anh -->
+        <a href="#section-select" id="btn-lets-play" class="btn-lets-play">
+          <span>LET'S PLAY</span>
+          <span>➔</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- MÀN 2: CHỌN BAN -->
+    <section class="section-select" id="section-select">
+      <div class="section-header">
+        <div class="section-subtitle">Khám phá hành trình tình nguyện</div>
+        <h2 class="section-title">Bạn muốn apply vào ban nào?</h2>
+      </div>
+
+      <div class="departments-grid">
+        <!-- 1. Ban Truyền thông - IT -->
+        <article class="dept-card" data-dept="1">
+          <div class="dept-card-media">
+            <img src="assets/dept-icons.jpg" alt="Ban Truyền thông - IT" />
+            <span class="dept-card-badge">Game Ghép Hình</span>
+          </div>
+          <div class="dept-card-content">
+            <h3 class="dept-name">💻 Ban Truyền thông - IT</h3>
+            <p class="dept-desc">Xây dựng hình ảnh, thiết kế ấn phẩm, quay dựng media và quản trị kỹ thuật số cho các chiến dịch thiện nguyện.</p>
+            <div class="dept-footer">
+              <span class="dept-game-name">🧩 Thử thách Jigsaw</span>
+              <div class="dept-play-btn">➔</div>
+            </div>
+          </div>
+        </article>
+
+        <!-- 2. Ban Nội dung -->
+        <article class="dept-card" data-dept="2">
+          <div class="dept-card-media">
+            <img src="assets/dept-icons.jpg" alt="Ban Nội dung" />
+            <span class="dept-card-badge">Game Endless Runner</span>
+          </div>
+          <div class="dept-card-content">
+            <h3 class="dept-name">✍️ Ban Nội dung</h3>
+            <p class="dept-desc">Ngòi bút truyền cảm hứng, viết câu chuyện nhân ái, lên kịch bản các chuyến đi khám chữa bệnh và phát thuốc cộng đồng.</p>
+            <div class="dept-footer">
+              <span class="dept-game-name">🏃 Vượt chướng ngại</span>
+              <div class="dept-play-btn">➔</div>
+            </div>
+          </div>
+        </article>
+
+        <!-- 3. Ban Tài chính -->
+        <article class="dept-card" data-dept="3">
+          <div class="dept-card-media">
+            <img src="assets/dept-icons.jpg" alt="Ban Tài chính" />
+            <span class="dept-card-badge">Game Đào Vàng</span>
+          </div>
+          <div class="dept-card-content">
+            <h3 class="dept-name">💰 Ban Tài chính</h3>
+            <p class="dept-desc">Gây quỹ từ thiện, tìm kiếm nhà tài trợ thuốc và thiết bị y tế, quản lý ngân sách minh bạch cho các hành trình vì nụ cười trẻ thơ.</p>
+            <div class="dept-footer">
+              <span class="dept-game-name">⛏ Đào vàng gây quỹ</span>
+              <div class="dept-play-btn">➔</div>
+            </div>
+          </div>
+        </article>
+
+        <!-- 4. Ban Hành chính - Nhân sự -->
+        <article class="dept-card" data-dept="4">
+          <div class="dept-card-media">
+            <img src="assets/dept-icons.jpg" alt="Ban Hành chính - Nhân sự" />
+            <span class="dept-card-badge">Game Quản Lý Đội Ngũ</span>
+          </div>
+          <div class="dept-card-content">
+            <h3 class="dept-name">🤝 Ban HC - Nhân sự</h3>
+            <p class="dept-desc">Sợi dây gắn kết đại gia đình áo đỏ, điều phối nhân lực các chuyến tình nguyện xa, hậu cần vững chắc và chăm sóc thành viên.</p>
+            <div class="dept-footer">
+              <span class="dept-game-name">👥 Chiêu mộ nhân lực</span>
+              <div class="dept-play-btn">➔</div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+  </div>
+
+  <!-- MODAL GIỚI THIỆU BAN (POPUP TRƯỚC KHI VÀO GAME) -->
+  <div id="dept-intro-modal" class="modal-backdrop">
+    <div class="modal-card">
+      <div class="intro-modal-media">
+        <img id="modal-dept-img" src="assets/volunteer.jpg" alt="Giới thiệu ban" />
+      </div>
+
+      <h3 class="modal-title" id="modal-dept-name">Tên Ban</h3>
+      <p class="modal-message" id="modal-dept-mission">Sứ mệnh của ban...</p>
+
+      <div class="intro-guide-box">
+        <strong>🎮 Thử thách:</strong> <span id="modal-dept-guide">Hướng dẫn chơi...</span>
+      </div>
+
+      <div class="modal-buttons">
+        <button id="btn-close-modal" class="btn-secondary">Đóng</button>
+        <a id="btn-launch-game" href="#" class="btn-primary">
+          <span id="modal-dept-btn-label">Chơi ngay</span> ➔
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/bg-remover.js"></script>
+
+  <script>
+    // Khởi tạo trang chủ
+    window.addEventListener('DOMContentLoaded', () => {
+      // 1. Cập nhật thông tin từ config
+      if (window.CLUB_CONFIG) {
+        document.getElementById('brand-name').textContent = CLUB_CONFIG.name;
+        document.getElementById('brand-slogan').textContent = CLUB_CONFIG.slogan;
+      }
+
+      // 2. Click Let's play cuộn mượt xuống Màn 2
+      const playBtn = document.getElementById('btn-lets-play');
+      playBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.sound.playClick();
+        document.getElementById('section-select').scrollIntoView({ behavior: 'smooth' });
+      });
+
+      // 3. Modal Giới thiệu Ban
+      const modal = document.getElementById('dept-intro-modal');
+      const modalName = document.getElementById('modal-dept-name');
+      const modalMission = document.getElementById('modal-dept-mission');
+      const modalGuide = document.getElementById('modal-dept-guide');
+      const modalImg = document.getElementById('modal-dept-img');
+      const modalBtnLabel = document.getElementById('modal-dept-btn-label');
+      const launchBtn = document.getElementById('btn-launch-game');
+      const closeBtn = document.getElementById('btn-close-modal');
+
+      document.querySelectorAll('.dept-card').forEach(card => {
+        card.addEventListener('click', () => {
+          window.sound.playClick();
+          const deptId = parseInt(card.dataset.dept, 10);
+          const dept = window.DEPARTMENTS_DATA[deptId];
+          if (!dept) return;
+
+          modalName.textContent = `${dept.icon} ${dept.name}`;
+          modalMission.textContent = dept.mission;
+          modalGuide.textContent = dept.guide;
+          modalBtnLabel.textContent = dept.btnLabel;
+          launchBtn.href = dept.file;
+
+          // Đổi ảnh minh họa tùy ban
+          if (deptId === 1) modalImg.src = "assets/volunteer.jpg";
+          else if (deptId === 2) modalImg.src = "assets/candidate.jpg";
+          else if (deptId === 3) modalImg.src = "assets/miner.jpg";
+          else if (deptId === 4) modalImg.src = "assets/volunteer.jpg";
+
+          modal.classList.add('active');
+        });
+      });
+
+      closeBtn.addEventListener('click', () => {
+        window.sound.playClick();
+        modal.classList.remove('active');
+      });
+
+      launchBtn.addEventListener('click', () => {
+        window.sound.playClick();
+      });
+
+      // Click ra ngoài modal để đóng
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          modal.classList.remove('active');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

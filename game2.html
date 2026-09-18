@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Game 2: Vượt Chướng Ngại Vật - Ban Nội Dung</title>
+  <meta name="description" content="Endless Runner kiểu Chrome Dino tính km của Ban Nội Dung - CLB Tình Nguyện Trường Y." />
+
+  <!-- Google Fonts: Be Vietnam Pro & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <div id="app-container">
+    <!-- Top Bar -->
+    <header class="top-bar">
+      <a href="index.html" class="club-brand" title="Về trang chủ">
+        <div class="club-logo-badge">❤</div>
+        <div class="club-title-wrap">
+          <h1 id="brand-name">CLB TÌNH NGUYỆN TRƯỜNG Y</h1>
+          <p>Ban Nội dung</p>
+        </div>
+      </a>
+
+      <div class="top-actions">
+        <button class="btn-icon" id="btn-sound-toggle" title="Bật/Tắt âm thanh" aria-label="Âm thanh">
+          <span id="sound-icon">🔊</span>
+        </button>
+        <a href="index.html#section-select" class="btn-icon" title="Chọn ban khác" aria-label="Chọn ban">
+          <span>📋</span>
+        </a>
+      </div>
+    </header>
+
+    <!-- Game Arena -->
+    <main class="game-arena">
+      <div class="game-hud">
+        <div class="hud-title">✍️ Chạy Vượt Chướng Ngại Vô Hạn</div>
+        <div class="hud-stats">
+          <span class="hud-pill" id="runner-distance-hud">Quãng đường: 0.00 km</span>
+          <span class="hud-pill" id="runner-speed-hud">Tốc độ: 1.0x</span>
+        </div>
+      </div>
+
+      <div class="canvas-wrapper">
+        <canvas id="canvas-runner" width="800" height="340"></canvas>
+      </div>
+
+      <!-- Nút điều khiển di động -->
+      <div class="mobile-controls-row">
+        <button id="btn-runner-jump" class="btn-mobile-ctrl">
+          <span>🚀 NHẢY LÊN (SPACE / CHẠM)</span>
+        </button>
+      </div>
+
+      <div class="btn-group-dual" style="margin-top: 10px;">
+        <a href="index.html#section-select" class="btn-secondary">Quay lại chọn ban</a>
+        <a href="index.html" class="btn-secondary">Về trang chủ</a>
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal thông báo kết quả -->
+  <div id="game-modal" class="modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-icon" id="modal-icon">🏅</div>
+      <h3 class="modal-title" id="modal-title">Chúc mừng bạn!</h3>
+      <p class="modal-message" id="modal-desc">Bạn đã cống hiến hết mình cùng ngòi bút của Ban Nội dung!</p>
+      
+      <div class="modal-stat-box" id="modal-stat-box"></div>
+
+      <div class="modal-buttons">
+        <button id="btn-modal-replay" class="btn-primary">Chơi lại</button>
+        <a href="index.html" class="btn-secondary">Về trang chủ</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/bg-remover.js"></script>
+
+  <script>
+    class RunnerGameApp {
+      constructor() {
+        this.canvas = document.getElementById('canvas-runner');
+        this.ctx = this.canvas.getContext('2d');
+        this.distanceHud = document.getElementById('runner-distance-hud');
+        this.speedHud = document.getElementById('runner-speed-hud');
+
+        this.animId = null;
+        this.isRunning = false;
+        this.distanceMeters = 0;
+        this.baseSpeed = 6.2;
+        this.currentSpeed = 6.2;
+        this.groundY = 270;
+
+        // Sprite nhân vật đã tách nền
+        this.charSprite = null;
+
+        // Nhân vật
+        this.player = {
+          x: 90,
+          y: this.groundY,
+          width: 44,
+          height: 64,
+          vy: 0,
+          jumpPower: -14,
+          gravity: 0.68,
+          isGrounded: true,
+          bounceAngle: 0
+        };
+
+        this.obstacles = [];
+        this.nextObstacleTimer = 80;
+
+        this.clouds = [
+          { x: 120, y: 50, speed: 1.1 },
+          { x: 440, y: 70, speed: 0.8 },
+          { x: 740, y: 45, speed: 1.4 }
+        ];
+
+        // Lắng nghe phím nhảy
+        window.addEventListener('keydown', (e) => {
+          if (e.code === 'Space' || e.key === 'ArrowUp') {
+            e.preventDefault();
+            this.jump();
+          }
+        });
+
+        this.canvas.addEventListener('pointerdown', (e) => {
+          e.preventDefault();
+          this.jump();
+        });
+
+        document.getElementById('btn-runner-jump').addEventListener('pointerdown', (e) => {
+          e.preventDefault();
+          this.jump();
+        });
+
+        document.getElementById('btn-modal-replay').addEventListener('click', () => {
+          document.getElementById('game-modal').classList.remove('active');
+          this.start();
+        });
+      }
+
+      async init() {
+        try {
+          // Tự động tách nền trắng của asset nhân vật áo đỏ
+          this.charSprite = await BackgroundRemover.loadTransparent('assets/volunteer.jpg');
+        } catch (e) {
+          console.log("Dùng đồ họa procedural cho nhân vật");
+        }
+        this.start();
+      }
+
+      start() {
+        this.isRunning = true;
+        this.distanceMeters = 0;
+        this.currentSpeed = this.baseSpeed;
+        this.player.y = this.groundY;
+        this.player.vy = 0;
+        this.player.isGrounded = true;
+        this.obstacles = [];
+        this.nextObstacleTimer = 60;
+
+        if (this.animId) cancelAnimationFrame(this.animId);
+        this.loop();
+      }
+
+      stop() {
+        this.isRunning = false;
+        if (this.animId) cancelAnimationFrame(this.animId);
+      }
+
+      jump() {
+        if (!this.isRunning) return;
+        if (this.player.isGrounded) {
+          this.player.vy = this.player.jumpPower;
+          this.player.isGrounded = false;
+          window.sound.playJump();
+        }
+      }
+
+      loop() {
+        if (!this.isRunning) return;
+        this.update();
+        this.draw();
+        this.animId = requestAnimationFrame(() => this.loop());
+      }
+
+      update() {
+        this.distanceMeters += (this.currentSpeed * 0.15);
+        const km = (this.distanceMeters / 1000).toFixed(2);
+        this.distanceHud.textContent = `Quãng đường: ${km} km`;
+
+        // Tốc độ tăng dần
+        this.currentSpeed = this.baseSpeed + Math.min(8.5, (this.distanceMeters / 500));
+        this.speedHud.textContent = `Tốc độ: ${(this.currentSpeed / this.baseSpeed).toFixed(1)}x`;
+
+        // Trọng lực & nhảy
+        this.player.y += this.player.vy;
+        this.player.vy += this.player.gravity;
+
+        if (this.player.y >= this.groundY) {
+          this.player.y = this.groundY;
+          this.player.vy = 0;
+          this.player.isGrounded = true;
+        }
+
+        if (this.player.isGrounded) {
+          this.player.bounceAngle += 0.35;
+        }
+
+        // Mây bay
+        this.clouds.forEach(c => {
+          c.x -= c.speed;
+          if (c.x < -100) c.x = this.canvas.width + 50;
+        });
+
+        // Tạo chướng ngại vật ngẫu nhiên
+        this.nextObstacleTimer--;
+        if (this.nextObstacleTimer <= 0) {
+          const type = Math.random() > 0.4 ? 'deadline' : 'paper';
+          this.obstacles.push({
+            x: this.canvas.width + 40,
+            y: this.groundY,
+            width: type === 'deadline' ? 36 : 28,
+            height: type === 'deadline' ? 48 : 38,
+            type: type
+          });
+          this.nextObstacleTimer = Math.floor(70 + Math.random() * 60 - Math.min(30, this.currentSpeed * 2));
+        }
+
+        // Cập nhật chướng ngại vật & kiểm tra va chạm
+        for (let i = this.obstacles.length - 1; i >= 0; i--) {
+          const obs = this.obstacles[i];
+          obs.x -= this.currentSpeed;
+
+          // Hitbox
+          const playerBox = {
+            left: this.player.x + 8,
+            right: this.player.x + this.player.width - 8,
+            top: this.player.y - this.player.height + 8,
+            bottom: this.player.y
+          };
+
+          const obsBox = {
+            left: obs.x + 4,
+            right: obs.x + obs.width - 4,
+            top: obs.y - obs.height + 4,
+            bottom: obs.y
+          };
+
+          if (
+            playerBox.left < obsBox.right &&
+            playerBox.right > obsBox.left &&
+            playerBox.top < obsBox.bottom &&
+            playerBox.bottom > obsBox.top
+          ) {
+            this.gameOver();
+            return;
+          }
+
+          if (obs.x + obs.width < -50) {
+            this.obstacles.splice(i, 1);
+          }
+        }
+      }
+
+      draw() {
+        const w = this.canvas.width;
+        const h = this.canvas.height;
+        this.ctx.clearRect(0, 0, w, h);
+
+        // Nền trời
+        const skyGrad = this.ctx.createLinearGradient(0, 0, 0, this.groundY);
+        skyGrad.addColorStop(0, '#fff3ed');
+        skyGrad.addColorStop(1, '#ffffff');
+        this.ctx.fillStyle = skyGrad;
+        this.ctx.fillRect(0, 0, w, h);
+
+        // Mây trang trí
+        this.ctx.fillStyle = "rgba(255, 215, 200, 0.6)";
+        this.clouds.forEach(c => {
+          this.ctx.beginPath();
+          this.ctx.arc(c.x, c.y, 22, 0, Math.PI * 2);
+          this.ctx.arc(c.x + 20, c.y - 8, 26, 0, Math.PI * 2);
+          this.ctx.arc(c.x + 45, c.y, 20, 0, Math.PI * 2);
+          this.ctx.fill();
+        });
+
+        // Mặt đất
+        this.ctx.strokeStyle = '#e63946';
+        this.ctx.lineWidth = 3;
+        this.ctx.beginPath();
+        this.ctx.moveTo(0, this.groundY);
+        this.ctx.lineTo(w, this.groundY);
+        this.ctx.stroke();
+
+        // Gạch di chuyển trên mặt đất
+        this.ctx.fillStyle = '#ff8c38';
+        const offset = Math.floor(this.distanceMeters * 3) % 40;
+        for (let x = -offset; x < w; x += 40) {
+          this.ctx.fillRect(x, this.groundY + 6, 14, 3);
+        }
+
+        // Vẽ chướng ngại vật
+        this.obstacles.forEach(obs => {
+          if (obs.type === 'deadline') {
+            this.ctx.fillStyle = '#c1121f';
+            this.ctx.beginPath();
+            this.ctx.roundRect(obs.x, obs.y - obs.height, obs.width, obs.height, 6);
+            this.ctx.fill();
+            this.ctx.fillStyle = 'white';
+            this.ctx.font = 'bold 12px sans-serif';
+            this.ctx.textAlign = 'center';
+            this.ctx.fillText('DL', obs.x + obs.width / 2, obs.y - obs.height / 2 + 4);
+          } else {
+            this.ctx.fillStyle = '#ffd166';
+            this.ctx.beginPath();
+            this.ctx.roundRect(obs.x, obs.y - obs.height, obs.width, obs.height, 4);
+            this.ctx.fill();
+            this.ctx.fillStyle = '#2b2d42';
+            this.ctx.font = '16px sans-serif';
+            this.ctx.textAlign = 'center';
+            this.ctx.fillText('📝', obs.x + obs.width / 2, obs.y - obs.height / 2 + 6);
+          }
+        });
+
+        // Vẽ nhân vật
+        this.drawPlayer();
+      }
+
+      drawPlayer() {
+        const p = this.player;
+        const x = p.x;
+        const y = p.y;
+
+        this.ctx.save();
+
+        // Bóng đổ
+        this.ctx.fillStyle = "rgba(0, 0, 0, 0.12)";
+        this.ctx.beginPath();
+        this.ctx.ellipse(x + p.width/2, this.groundY, p.width * 0.45, 4, 0, 0, Math.PI * 2);
+        this.ctx.fill();
+
+        if (this.charSprite) {
+          // Nhún nhảy nhẹ khi chạy
+          const bounce = p.isGrounded ? Math.sin(p.bounceAngle) * 3 : 0;
+          this.ctx.drawImage(this.charSprite, x, y - p.height + bounce, p.width, p.height);
+        } else {
+          // Procedural fallback nếu chưa nạp sprite
+          const legSwing = Math.sin(p.bounceAngle) * 10;
+          this.ctx.strokeStyle = '#2b2d42';
+          this.ctx.lineWidth = 4;
+          this.ctx.lineCap = 'round';
+          this.ctx.beginPath();
+          this.ctx.moveTo(x + 14, y - 20);
+          this.ctx.lineTo(x + 14 - legSwing, y);
+          this.ctx.moveTo(x + 30, y - 20);
+          this.ctx.lineTo(x + 30 + legSwing, y);
+          this.ctx.stroke();
+
+          // Áo đỏ
+          this.ctx.fillStyle = '#e63946';
+          this.ctx.beginPath();
+          this.ctx.roundRect(x + 8, y - 48, 28, 30, 6);
+          this.ctx.fill();
+          this.ctx.fillStyle = '#ffffff';
+          this.ctx.fillRect(x + 19, y - 42, 6, 16);
+          this.ctx.fillRect(x + 14, y - 37, 16, 6);
+
+          // Đầu
+          this.ctx.fillStyle = '#ffdfba';
+          this.ctx.beginPath();
+          this.ctx.arc(x + 22, y - 56, 11, 0, Math.PI * 2);
+          this.ctx.fill();
+        }
+
+        this.ctx.restore();
+      }
+
+      gameOver() {
+        this.stop();
+        window.sound.playHit();
+        const km = (this.distanceMeters / 1000).toFixed(2);
+
+        setTimeout(() => {
+          const modal = document.getElementById('game-modal');
+          const modalStat = document.getElementById('modal-stat-box');
+          modalStat.innerHTML = `
+            <div>Bạn đã đi được: <strong>${km} km</strong></div>
+            <div>Tinh thần: Kiên cường & Giàu cảm xúc!</div>
+          `;
+          modal.classList.add('active');
+        }, 350);
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const game = new RunnerGameApp();
+      game.init();
+    });
+  </script>
+</body>
+</html>
