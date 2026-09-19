@@ -176,7 +176,7 @@
     }
 
     .dept-card-media {
-      height: 150px;
+      height: 175px;
       width: 100%;
       position: relative;
       overflow: hidden;
@@ -190,6 +190,7 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
+      object-position: top center;
       transition: transform 0.5s ease;
     }
 
@@ -289,6 +290,7 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
+      object-position: top center;
     }
 
     .intro-guide-box {
@@ -364,12 +366,12 @@
         <!-- 1. Ban Truyền thông - IT -->
         <article class="dept-card" data-dept="1">
           <div class="dept-card-media">
-            <img src="assets/dept-icons.jpg" alt="Ban Truyền thông - IT" />
+            <img src="assets/dept-it-art.png" alt="Ban Truyền thông - IT" />
             <span class="dept-card-badge">Game Ghép Hình</span>
           </div>
           <div class="dept-card-content">
             <h3 class="dept-name">💻 Ban Truyền thông - IT</h3>
-            <p class="dept-desc">Xây dựng hình ảnh, thiết kế ấn phẩm, quay dựng media và quản trị kỹ thuật số cho các chiến dịch thiện nguyện.</p>
+            <p class="dept-desc">🎙 Là tiếng nói và hình ảnh của CLB, biến những câu chuyện ý nghĩa thành những thước phim, bài viết, ấn phẩm 'chạm' đến trái tim cộng đồng.</p>
             <div class="dept-footer">
               <span class="dept-game-name">🧩 Thử thách Jigsaw</span>
               <div class="dept-play-btn">➔</div>
@@ -380,12 +382,12 @@
         <!-- 2. Ban Nội dung -->
         <article class="dept-card" data-dept="2">
           <div class="dept-card-media">
-            <img src="assets/dept-icons.jpg" alt="Ban Nội dung" />
+            <img src="assets/dept-noidung-art.png" alt="Ban Nội dung" />
             <span class="dept-card-badge">Game Endless Runner</span>
           </div>
           <div class="dept-card-content">
             <h3 class="dept-name">✍️ Ban Nội dung</h3>
-            <p class="dept-desc">Ngòi bút truyền cảm hứng, viết câu chuyện nhân ái, lên kịch bản các chuyến đi khám chữa bệnh và phát thuốc cộng đồng.</p>
+            <p class="dept-desc">🏍 Là người tiên phong, đi đến những vùng đất mới, tìm hiểu, khảo sát và xây dựng nên 'linh hồn' cho mỗi chương trình.</p>
             <div class="dept-footer">
               <span class="dept-game-name">🏃 Vượt chướng ngại</span>
               <div class="dept-play-btn">➔</div>
@@ -396,12 +398,12 @@
         <!-- 3. Ban Tài chính -->
         <article class="dept-card" data-dept="3">
           <div class="dept-card-media">
-            <img src="assets/dept-icons.jpg" alt="Ban Tài chính" />
+            <img src="assets/dept-taichinh-art.png" alt="Ban Tài chính" />
             <span class="dept-card-badge">Game Đào Vàng</span>
           </div>
           <div class="dept-card-content">
             <h3 class="dept-name">💰 Ban Tài chính</h3>
-            <p class="dept-desc">Gây quỹ từ thiện, tìm kiếm nhà tài trợ thuốc và thiết bị y tế, quản lý ngân sách minh bạch cho các hành trình vì nụ cười trẻ thơ.</p>
+            <p class="dept-desc">🪙 Là người đảm bảo sự bền vững cho mọi hoạt động, từ việc quản lý quỹ, gây quỹ đến việc đề xuất các giải pháp chi tiêu tối ưu.</p>
             <div class="dept-footer">
               <span class="dept-game-name">⛏ Đào vàng gây quỹ</span>
               <div class="dept-play-btn">➔</div>
@@ -412,12 +414,12 @@
         <!-- 4. Ban Hành chính - Nhân sự -->
         <article class="dept-card" data-dept="4">
           <div class="dept-card-media">
-            <img src="assets/dept-icons.jpg" alt="Ban Hành chính - Nhân sự" />
+            <img src="assets/dept-nhansu-art.png" alt="Ban Hành chính - Nhân sự" />
             <span class="dept-card-badge">Game Quản Lý Đội Ngũ</span>
           </div>
           <div class="dept-card-content">
             <h3 class="dept-name">🤝 Ban HC - Nhân sự</h3>
-            <p class="dept-desc">Sợi dây gắn kết đại gia đình áo đỏ, điều phối nhân lực các chuyến tình nguyện xa, hậu cần vững chắc và chăm sóc thành viên.</p>
+            <p class="dept-desc">💻 Là "xương sống" của CLB, đảm bảo mọi quy trình vận hành trơn tru, quản lý thông tin nhân sự trong câu lạc bộ.</p>
             <div class="dept-footer">
               <span class="dept-game-name">👥 Chiêu mộ nhân lực</span>
               <div class="dept-play-btn">➔</div>
@@ -497,10 +499,17 @@
           launchBtn.href = dept.file;
 
           // Đổi ảnh minh họa tùy ban
-          if (deptId === 1) modalImg.src = "assets/volunteer.jpg";
-          else if (deptId === 2) modalImg.src = "assets/candidate.jpg";
-          else if (deptId === 3) modalImg.src = "assets/miner.jpg";
-          else if (deptId === 4) modalImg.src = "assets/volunteer.jpg";
+          if (dept && dept.image) {
+            modalImg.src = dept.image;
+          } else if (deptId === 1) {
+            modalImg.src = "assets/dept-it-art.png";
+          } else if (deptId === 2) {
+            modalImg.src = "assets/dept-noidung-art.png";
+          } else if (deptId === 3) {
+            modalImg.src = "assets/dept-taichinh-art.png";
+          } else if (deptId === 4) {
+            modalImg.src = "assets/dept-nhansu-art.png";
+          }
 
           modal.classList.add('active');
         });

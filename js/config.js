@@ -21,18 +21,30 @@ const CLUB_CONFIG = {
 const IMAGE_CONFIG = {
   heroBanner: "assets/hero-banner.jpg",    // Banner Trang chủ Màn 1
   deptIcons: "assets/dept-icons.jpg",      // Bộ 4 biểu tượng ban Màn 2
+  
+  // 4 ban chuyên môn (ảnh gốc và ảnh artwork)
+  deptIT: "assets/dept-it.png",
+  deptContent: "assets/dept-noidung.png",
+  deptFinance: "assets/dept-taichinh.png",
+  deptHR: "assets/dept-nhansu.png",
+
+  deptITArt: "assets/dept-it-art.png",
+  deptContentArt: "assets/dept-noidung-art.png",
+  deptFinanceArt: "assets/dept-taichinh-art.png",
+  deptHRArt: "assets/dept-nhansu-art.png",
+
   volunteer: "assets/volunteer.jpg",      // Nhân vật Áo đỏ Tình nguyện viên
   candidate: "assets/candidate.jpg",      // Ứng viên / người qua đường
   miner: "assets/miner.jpg",              // Thợ mỏ gây quỹ Ban Tài chính
   
   // Tương thích với các mã ảnh theo yêu cầu đề bài
   anh1: "assets/hero-banner.jpg",
-  anh2: "assets/dept-icons.jpg",
-  anh3: "assets/dept-icons.jpg",
-  anh4: "assets/volunteer.jpg",
-  anh5: "assets/candidate.jpg",
-  anh6: "assets/miner.jpg",
-  anh7: "assets/volunteer.jpg",
+  anh2: "assets/dept-it-art.png",
+  anh3: "assets/dept-noidung-art.png",
+  anh4: "assets/dept-it-art.png",
+  anh5: "assets/dept-noidung-art.png",
+  anh6: "assets/dept-taichinh-art.png",
+  anh7: "assets/dept-nhansu-art.png",
 };
 
 // ============================================================================
@@ -66,9 +78,10 @@ const DEPARTMENTS_DATA = {
     file: "game1.html",
     gameName: "Ghép hình Jigsaw",
     btnLabel: "Chơi ngay",
-    mission: "Xây dựng hình ảnh, thiết kế ấn phẩm, quay dựng media và quản trị kỹ thuật số cho các chiến dịch thiện nguyện.",
+    mission: "🎙 Là tiếng nói và hình ảnh của CLB, biến những câu chuyện ý nghĩa thành những thước phim, bài viết, ấn phẩm 'chạm' đến trái tim cộng đồng.",
     skills: "Thiết kế đồ họa, edit video, quản trị website & mạng xã hội, tư duy truyền thông.",
     guide: "Kéo thả hoặc chạm vào mảnh ghép ở khay rồi chạm vào đúng ô trên lưới 3x3 để hoàn thiện bức tranh.",
+    image: "assets/dept-it-art.png",
     imageKey: "anh4"
   },
   2: {
@@ -79,9 +92,10 @@ const DEPARTMENTS_DATA = {
     file: "game2.html",
     gameName: "Endless Runner Vượt Chướng Ngại",
     btnLabel: "Bắt đầu chạy",
-    mission: "Khơi nguồn cảm hứng, chấp bút kịch bản chương trình, viết bài tuyên truyền và kết nối cộng đồng nhân ái.",
+    mission: "🏍 Là người tiên phong, đi đến những vùng đất mới, tìm hiểu, khảo sát và xây dựng nên 'linh hồn' cho mỗi chương trình.",
     skills: "Kỹ năng viết lách giàu cảm xúc, sáng tạo nội dung, lên kế hoạch hoạt động thiện nguyện.",
     guide: "Nhấn phím Space / Mũi tên Lên hoặc chạm màn hình để nhảy qua chướng ngại vật. Chạy càng xa km càng cao!",
+    image: "assets/dept-noidung-art.png",
     imageKey: "anh5"
   },
   3: {
@@ -92,9 +106,10 @@ const DEPARTMENTS_DATA = {
     file: "game3.html",
     gameName: "Đào Vàng Gây Quỹ Tình Nguyện",
     btnLabel: "Chơi ngay",
-    mission: "Tìm kiếm nhà tài trợ y tế, quản lý minh bạch ngân sách các chuyến thiện nguyện khám chữa bệnh vùng cao.",
+    mission: "🪙 Là người đảm bảo sự bền vững cho mọi hoạt động, từ việc quản lý quỹ, gây quỹ đến việc đề xuất các giải pháp chi tiêu tối ưu.",
     skills: "Kỹ năng đối ngoại, thương thuyết tài trợ, quản trị tài chính và dự trù ngân sách.",
     guide: "Canh móc câu dao động trúng vàng rồi bấm Space hoặc chạm màn hình để phóng móc câu gom kinh phí về kho.",
+    image: "assets/dept-taichinh-art.png",
     imageKey: "anh6"
   },
   4: {
@@ -105,9 +120,10 @@ const DEPARTMENTS_DATA = {
     file: "game4.html",
     gameName: "Chiêu Mộ Đội Ngũ Áo Đỏ",
     btnLabel: "Chơi ngay",
-    mission: "Tổ chức nhân lực, kết nối tình thân, đảm bảo hậu cần y tế và tinh thần đoàn kết toàn đội.",
+    mission: "💻 Là 'xương sống' của CLB, đảm bảo mọi quy trình vận hành trơn tru, quản lý thông tin nhân sự trong câu lạc bộ.",
     skills: "Quản trị nhân sự, lắng nghe, kết nối con người, sắp xếp công việc khoa học.",
     guide: "Dùng phím Mũi tên Lên/Xuống hoặc nút cảm ứng để chuyển làn thu nhận tân binh áo đỏ và né vật cản.",
+    image: "assets/dept-nhansu-art.png",
     imageKey: "anh7"
   }
 };
