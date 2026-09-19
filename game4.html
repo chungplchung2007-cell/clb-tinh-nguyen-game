@@ -42,25 +42,71 @@
       border: 2px solid var(--border-color);
     }
 
-    /* Thẻ thông báo Buff đang kích hoạt */
-    .active-buff-container {
-      position: absolute;
-      top: 12px;
-      right: 12px;
+    /* ==========================================================================
+       BẢNG CHỨC NĂNG THU THẬP RIÊNG BIỆT (KHÔNG CHE ĐƯỜNG ĐI)
+       ========================================================================== */
+    .squad-features-panel {
+      background: #f8fafc;
+      border: 1.5px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 10px 16px;
       display: flex;
-      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .features-rank-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .rank-badge-tag-external {
+      background: white;
+      border: 1.5px solid var(--primary);
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--primary);
+      display: inline-flex;
+      align-items: center;
       gap: 6px;
-      z-index: 10;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .features-buffs-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .buff-slot-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .active-buff-container-external {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
     .buff-badge {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(6px);
-      padding: 5px 12px;
+      background: white;
+      padding: 6px 14px;
       border-radius: var(--radius-full);
       font-size: 12px;
       font-weight: 800;
-      display: flex;
+      display: inline-flex;
       align-items: center;
       gap: 6px;
       box-shadow: var(--shadow-sm);
@@ -70,36 +116,30 @@
     .buff-badge.magnet {
       border: 1.5px solid #ffb703;
       color: #d90429;
+      background: #fffdf0;
     }
 
     .buff-badge.shield {
       border: 1.5px solid #06d6a0;
       color: #059669;
+      background: #f0fdf4;
+    }
+
+    .buff-empty-hint {
+      font-size: 12px;
+      font-weight: 600;
+      color: #94a3b8;
+      background: #f1f5f9;
+      border: 1px dashed #cbd5e1;
+      padding: 5px 12px;
+      border-radius: var(--radius-full);
+      display: inline-flex;
+      align-items: center;
     }
 
     @keyframes pulse {
       from { transform: scale(1); }
-      to { transform: scale(1.05); }
-    }
-
-    /* Cột mốc danh hiệu đội ngũ */
-    .rank-badge-tag {
-      position: absolute;
-      top: 12px;
-      left: 12px;
-      background: rgba(255, 255, 255, 0.94);
-      backdrop-filter: blur(6px);
-      border: 1.5px solid var(--primary);
-      padding: 5px 14px;
-      border-radius: var(--radius-full);
-      font-size: 12px;
-      font-weight: 800;
-      color: var(--primary);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      box-shadow: var(--shadow-sm);
-      z-index: 10;
+      to { transform: scale(1.04); }
     }
   </style>
 </head>
@@ -143,22 +183,33 @@
         </div>
       </div>
 
-      <!-- Canvas Khung Trò Chơi 3 Làn Siêu Nét -->
-      <div class="canvas-wrapper">
-        <canvas id="canvas-squad" width="800" height="360"></canvas>
-        
-        <div class="rank-badge-tag" id="rank-badge-tag">
-          <span id="rank-icon">🥉</span> <span id="rank-title">Đội Tiên Phong</span>
+      <!-- BẢNG CHỨC NĂNG THU THẬP RIÊNG BIỆT (KHÔNG CHE ĐƯỜNG ĐI) -->
+      <div class="squad-features-panel">
+        <div class="features-rank-wrap">
+          <div class="rank-badge-tag-external" id="rank-badge-tag">
+            <span id="rank-icon">🥉</span> <span id="rank-title">Đội Tiên Phong</span>
+          </div>
         </div>
 
-        <div class="active-buff-container">
-          <div class="buff-badge magnet" id="buff-magnet-tag" style="display: none;">
-            <span>📢 HÚT TÂN BINH (3 LÀN)</span> <strong id="magnet-time">7s</strong>
-          </div>
-          <div class="buff-badge shield" id="buff-shield-tag" style="display: none;">
-            <span>🧋 KHIÊN BẤT TỬ PHÁ ĐÁ</span> <strong id="shield-time">5s</strong>
+        <div class="features-buffs-wrap">
+          <div class="buff-slot-title">⚡ Chức Năng Thu Thập:</div>
+          <div class="active-buff-container-external">
+            <div class="buff-badge magnet" id="buff-magnet-tag" style="display: none;">
+              <span>📢 HÚT TÂN BINH (3 LÀN)</span> <strong id="magnet-time">7s</strong>
+            </div>
+            <div class="buff-badge shield" id="buff-shield-tag" style="display: none;">
+              <span>🧋 KHIÊN BẤT TỬ PHÁ ĐÁ</span> <strong id="shield-time">5s</strong>
+            </div>
+            <div class="buff-empty-hint" id="buff-empty-hint">
+              <span>Chưa kích hoạt buff (Nhặt 📢 Loa hoặc 🧋 Khiên trên đường)</span>
+            </div>
           </div>
         </div>
+      </div>
+
+      <!-- Canvas Khung Trò Chơi 3 Làn Siêu Nét (Đường đi thông thoáng 100%) -->
+      <div class="canvas-wrapper">
+        <canvas id="canvas-squad" width="800" height="360"></canvas>
       </div>
 
       <!-- Phím đổi làn di động -->
@@ -195,7 +246,7 @@
   </div>
 
   <!-- Scripts -->
-  <script src="js/config.js"></script>
+  <script src="js/config.js?v=20260920"></script>
   <script src="js/audio.js"></script>
 
   <script>
@@ -217,6 +268,7 @@
         this.magnetTime = document.getElementById('magnet-time');
         this.buffShieldTag = document.getElementById('buff-shield-tag');
         this.shieldTime = document.getElementById('shield-time');
+        this.buffEmptyHint = document.getElementById('buff-empty-hint');
 
         this.animId = null;
         this.isRunning = false;
@@ -316,6 +368,7 @@
         this.shieldTimer = 0;
         this.buffMagnetTag.style.display = 'none';
         this.buffShieldTag.style.display = 'none';
+        if (this.buffEmptyHint) this.buffEmptyHint.style.display = 'inline-flex';
 
         this.initSquadMembers();
         this.updateHud();
@@ -393,12 +446,14 @@
         });
 
         // Cập nhật Buff timers
+        let hasActiveBuff = false;
         if (this.magnetTimer > 0) {
           this.magnetTimer -= 0.016;
           if (this.magnetTimer <= 0) {
             this.buffMagnetTag.style.display = 'none';
           } else {
-            this.buffMagnetTag.style.display = 'flex';
+            hasActiveBuff = true;
+            this.buffMagnetTag.style.display = 'inline-flex';
             this.magnetTime.textContent = `${Math.ceil(this.magnetTimer)}s`;
           }
         }
@@ -408,9 +463,14 @@
           if (this.shieldTimer <= 0) {
             this.buffShieldTag.style.display = 'none';
           } else {
-            this.buffShieldTag.style.display = 'flex';
+            hasActiveBuff = true;
+            this.buffShieldTag.style.display = 'inline-flex';
             this.shieldTime.textContent = `${Math.ceil(this.shieldTimer)}s`;
           }
+        }
+
+        if (this.buffEmptyHint) {
+          this.buffEmptyHint.style.display = hasActiveBuff ? 'none' : 'inline-flex';
         }
 
         // Sinh vật phẩm & Ứng viên

@@ -208,7 +208,7 @@
   </div>
 
   <!-- Scripts -->
-  <script src="js/config.js"></script>
+  <script src="js/config.js?v=20260920"></script>
   <script src="js/audio.js"></script>
 
   <script>
@@ -234,42 +234,42 @@
         this.timerId = null;
         this.isRunning = false;
 
-        // Cấu hình 4 Chiến dịch gây quỹ hấp dẫn
+        // Cấu hình 4 Chiến dịch gây quỹ hấp dẫn với độ khó được nâng cao
         this.campaigns = [
           {
             level: 1,
-            target: 750,
-            time: 60,
+            target: 1200,
+            time: 50,
             title: "🏥 CHIẾN DỊCH 1: GÂY QUỸ TỦ THUỐC VÙNG CAO",
-            desc: "Thu gom kinh phí mua 50 tủ thuốc y tế cho bà con bản xa!"
+            desc: "Thử thách: Khéo léo tránh các bãi đá ngầm, gom đủ $1,200 trong 50s!"
           },
           {
             level: 2,
-            target: 1600,
-            time: 60,
+            target: 2400,
+            time: 45,
             title: "🎓 CHIẾN DỊCH 2: HỌC BỔNG CHO EM ĐẾN TRƯỜNG",
-            desc: "Vận động tài trợ trao 100 suất học bổng cho học sinh nghèo vượt khó!"
+            desc: "Thử thách: Đạt $2,400 trong 45s giữa bãi đá dày đặc và chuột ngầm!"
           },
           {
             level: 3,
-            target: 2700,
-            time: 55,
+            target: 3600,
+            time: 40,
             title: "🩺 CHIẾN DỊCH 3: XE KHÁM BỆNH & SIÊU ÂM LƯU ĐỘNG",
-            desc: "Trang bị máy siêu âm và thuốc men thiết yếu cho buôn làng!"
+            desc: "Thử thách cao cấp: Canh góc chuẩn xác tuyệt đối để đạt $3,600 trong 40s!"
           },
           {
             level: 4,
-            target: 4000,
-            time: 50,
+            target: 5000,
+            time: 40,
             title: "🏆 CHIẾN DỊCH 4: XÂY DỰNG TRẠM Y TẾ KIÊN CỐ",
-            desc: "Đạt đỉnh cao gây quỹ xây dựng trạm y tế vững chãi ngàn đời!"
+            desc: "Đỉnh cao gây quỹ: Chinh phục mốc $5,000 để hoàn tất đại công trình tình nguyện!"
           }
         ];
 
         this.currentLevelIdx = 0;
         this.currentGold = 0;
-        this.timeLeft = 60;
-        this.dynamiteCount = 2;
+        this.timeLeft = 50;
+        this.dynamiteCount = 1;
 
         // Buff kéo nhanh
         this.speedBuffTimer = 0;
@@ -278,14 +278,14 @@
         this.origin = { x: 400, y: 76 };
         this.hook = {
           angle: 0,
-          angleSpeed: 0.032,
+          angleSpeed: 0.046, // Vung nhanh hơn, đòi hỏi căn thời điểm chuẩn xác
           angleDir: 1,
           baseLength: 52,
           currentLength: 52,
           maxLength: 440,
           state: 'swing', // 'swing' | 'shoot' | 'rewind'
           caughtItem: null,
-          speed: 10.5
+          speed: 9.8 // Tốc độ phóng chân thực, thử thách hơn
         };
 
         this.items = [];
@@ -336,7 +336,7 @@
         const camp = this.campaigns[this.currentLevelIdx];
         this.currentGold = 0;
         this.timeLeft = camp.time;
-        this.dynamiteCount = 2;
+        this.dynamiteCount = this.currentLevelIdx === 0 ? 2 : 1;
         this.speedBuffTimer = 0;
         this.isRunning = true;
 
@@ -417,97 +417,119 @@
         this.items = [];
         const w = this.canvas.width;
         const h = this.canvas.height;
+        const lvl = this.currentLevelIdx;
 
-        // 1. KIM CƯƠNG TÀI TRỢ (💎 Siêu quý, siêu nhẹ, giá $600)
-        for (let i = 0; i < 2; i++) {
+        // 1. KIM CƯƠNG TÀI TRỢ (💎 Quý hiếm, hitbox nhỏ r=13 đòi hỏi bắn chuẩn)
+        const diamondCount = lvl >= 2 ? 2 : 1;
+        for (let i = 0; i < diamondCount; i++) {
           this.items.push({
-            x: 80 + Math.random() * (w - 160),
-            y: 200 + Math.random() * (h - 260),
-            radius: 16,
+            x: 100 + Math.random() * (w - 200),
+            y: 240 + Math.random() * (h - 290),
+            radius: 13,
             value: 600,
-            weight: 0.7,
+            weight: 0.8,
             type: 'diamond'
           });
         }
 
-        // 2. HÒM THUỐC CỨU TRỢ (💊 Sứ mệnh y tế: $350 + Thưởng 7s thời gian!)
-        for (let i = 0; i < 2; i++) {
+        // 2. CHUỘT ĐÀO HẦM CẮP KIM CƯƠNG (🐹 Thử thách di động ngang ngẫu hứng)
+        const moleCount = lvl >= 2 ? 2 : 1;
+        for (let i = 0; i < moleCount; i++) {
+          const moleY = 220 + i * 110 + Math.random() * 40;
+          const moleSpeed = (1.5 + lvl * 0.35) * (i % 2 === 0 ? 1 : -1);
           this.items.push({
-            x: 90 + Math.random() * (w - 180),
-            y: 190 + Math.random() * (h - 250),
-            radius: 22,
-            value: 350,
-            bonusTime: 7,
-            weight: 1.4,
-            type: 'med-chest'
+            x: 120 + Math.random() * (w - 240),
+            y: Math.min(h - 35, moleY),
+            vx: moleSpeed,
+            radius: 15,
+            value: 650,
+            weight: 1.0,
+            type: 'mole'
           });
         }
 
-        // 3. THỎI VÀNG CÁC KÍCH THƯỚC (Vàng nhỏ, vừa, lớn)
+        // 3. HÒM THUỐC CỨU TRỢ (💊 Sứ mệnh y tế: $300 + Thưởng 4-5s thời gian)
+        this.items.push({
+          x: 100 + Math.random() * (w - 200),
+          y: 190 + Math.random() * (h - 260),
+          radius: 20,
+          value: 300,
+          bonusTime: Math.max(3, 5 - Math.floor(lvl / 2)),
+          weight: 1.4,
+          type: 'med-chest'
+        });
+
+        // 4. THỎI VÀNG CÁC CỠ (Phân bổ hợp lý theo độ khó)
         // Vàng nhỏ
-        for (let i = 0; i < 4; i++) {
+        const smGoldCount = Math.max(2, 4 - Math.floor(lvl / 2));
+        for (let i = 0; i < smGoldCount; i++) {
           this.items.push({
             x: 70 + Math.random() * (w - 140),
             y: 160 + Math.random() * (h - 230),
-            radius: 17,
+            radius: 16,
             value: 100,
             weight: 1.2,
             type: 'gold-sm'
           });
         }
         // Vàng vừa
-        for (let i = 0; i < 3; i++) {
+        const mdGoldCount = lvl === 0 ? 2 : 3;
+        for (let i = 0; i < mdGoldCount; i++) {
           this.items.push({
             x: 80 + Math.random() * (w - 160),
-            y: 210 + Math.random() * (h - 270),
-            radius: 26,
+            y: 210 + Math.random() * (h - 260),
+            radius: 24,
             value: 250,
-            weight: 2.2,
+            weight: 2.3,
             type: 'gold-md'
           });
         }
-        // Vàng lớn
-        for (let i = 0; i < 2; i++) {
+        // Vàng lớn (Nặng, giá trị cao $500)
+        const lgGoldCount = lvl >= 1 ? 2 : 1;
+        for (let i = 0; i < lgGoldCount; i++) {
           this.items.push({
-            x: 100 + Math.random() * (w - 200),
-            y: 240 + Math.random() * (h - 300),
-            radius: 36,
+            x: 110 + Math.random() * (w - 220),
+            y: 260 + Math.random() * (h - 310),
+            radius: 35,
             value: 500,
-            weight: 4.2,
+            weight: 4.6,
             type: 'gold-lg'
           });
         }
 
-        // 4. HỘP QUÀ NHÀ TÀI TRỢ BÍ ẨN (🎁 Chứa Dynamite, Nước tăng lực hoặc $500)
-        for (let i = 0; i < 2; i++) {
+        // 5. HỘP QUÀ NHÀ TÀI TRỢ BÍ ẨN
+        this.items.push({
+          x: 100 + Math.random() * (w - 200),
+          y: 170 + Math.random() * (h - 240),
+          radius: 19,
+          value: 200,
+          weight: 1.3,
+          type: 'gift-bag'
+        });
+
+        // 6. THÙNG THUỐC NỔ TNT NGẦM
+        const tntCount = lvl >= 2 ? 2 : 1;
+        for (let i = 0; i < tntCount; i++) {
           this.items.push({
-            x: 100 + Math.random() * (w - 200),
-            y: 180 + Math.random() * (h - 250),
-            radius: 20,
-            value: 200,
-            weight: 1.2,
-            type: 'gift-bag'
+            x: 160 + i * 260 + Math.random() * 80,
+            y: 220 + Math.random() * (h - 280),
+            radius: 23,
+            value: 10,
+            weight: 1.0,
+            type: 'tnt'
           });
         }
 
-        // 5. THÙNG THUỐC NỔ TNT NGẦM (💣 Nổ dọn đá xung quanh)
-        this.items.push({
-          x: 160 + Math.random() * (w - 320),
-          y: 220 + Math.random() * (h - 280),
-          radius: 24,
-          value: 10,
-          weight: 1.0,
-          type: 'tnt'
-        });
-
-        // 6. ĐÁ TẢNG CHƯỚNG NGẠI (🪨 Nặng, ít tiền)
-        for (let i = 0; i < 3; i++) {
+        // 7. ĐÁ TẢNG CHƯỚNG NGẠI (🪨 Nặng, chắn đường hiểm hóc: 6 - 9 tảng)
+        const rockCount = 6 + lvl;
+        for (let i = 0; i < rockCount; i++) {
+          const isHeavyBoulder = i % 3 === 0;
           this.items.push({
             x: 70 + Math.random() * (w - 140),
-            y: 190 + Math.random() * (h - 250),
-            radius: 28,
-            value: 25,
-            weight: 5.5,
+            y: 170 + Math.random() * (h - 230),
+            radius: isHeavyBoulder ? 34 : 24,
+            value: isHeavyBoulder ? 20 : 10,
+            weight: isHeavyBoulder ? 7.2 : 5.0, // Tảng lớn kéo rất chậm, phạt nặng nếu bắn trượt
             type: 'rock'
           });
         }
@@ -530,6 +552,20 @@
 
       update() {
         const h = this.hook;
+
+        // Cập nhật vị trí chuột đào hầm chạy ngang
+        for (const it of this.items) {
+          if (it.type === 'mole') {
+            it.x += it.vx;
+            if (it.x > this.canvas.width - 65) {
+              it.x = this.canvas.width - 65;
+              it.vx = -Math.abs(it.vx);
+            } else if (it.x < 65) {
+              it.x = 65;
+              it.vx = Math.abs(it.vx);
+            }
+          }
+        }
 
         // Góc lắc lư dây câu
         if (h.state === 'swing') {
@@ -584,7 +620,7 @@
             weightFactor = Math.min(1.0, weightFactor * 0.4);
           }
 
-          const rewindSpeed = Math.max(2.8, (h.speed * (this.speedBuffTimer > 0 ? 1.6 : 1.0)) / weightFactor);
+          const rewindSpeed = Math.max(1.8, (h.speed * (this.speedBuffTimer > 0 ? 1.6 : 1.0)) / weightFactor);
           h.currentLength -= rewindSpeed;
 
           if (h.caughtItem) {
@@ -626,6 +662,10 @@
           window.sound.playDiamond();
           this.currentGold += item.value;
           this.addFloatingText(this.origin.x, this.origin.y - 20, `+$${item.value} 💎 KIM CƯƠNG!`, '#06d6a0');
+        } else if (item.type === 'mole') {
+          window.sound.playDiamond();
+          this.currentGold += item.value;
+          this.addFloatingText(this.origin.x, this.origin.y - 20, `+$${item.value} 🐹 CHUỘT MANG KIM CƯƠNG!`, '#06d6a0');
         } else if (item.type === 'med-chest') {
           window.sound.playCoin();
           this.currentGold += item.value;
@@ -846,6 +886,60 @@
           ctx.beginPath();
           ctx.arc(it.radius * 0.3, -it.radius * 0.4, 2.5, 0, Math.PI * 2);
           ctx.fill();
+        } else if (it.type === 'mole') {
+          // 🐹 CHUỘT ĐÀO HẦM CẮP KIM CƯƠNG
+          const dir = (it.vx || 1) >= 0 ? 1 : -1;
+          ctx.scale(dir, 1);
+
+          // Thân chuột
+          ctx.fillStyle = '#7f4f24';
+          ctx.beginPath();
+          ctx.ellipse(0, 0, it.radius * 1.15, it.radius * 0.8, 0, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Mũ bảo hộ thợ mỏ vàng
+          ctx.fillStyle = '#ffb703';
+          ctx.beginPath();
+          ctx.arc(3, -it.radius * 0.6, 7, Math.PI, 0);
+          ctx.fill();
+
+          // Đèn pin trên mũ
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath();
+          ctx.arc(8, -it.radius * 0.6 - 2, 2.5, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Mắt chuột
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath();
+          ctx.arc(7, -2, 3, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = '#1e293b';
+          ctx.beginPath();
+          ctx.arc(8, -2, 1.5, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Mũi hồng
+          ctx.fillStyle = '#ff758f';
+          ctx.beginPath();
+          ctx.arc(13, 1.5, 2.5, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Kim cương óng ánh đang cắp
+          ctx.save();
+          ctx.translate(13, -7);
+          ctx.fillStyle = '#48cae4';
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = 1.2;
+          ctx.beginPath();
+          ctx.moveTo(0, -6);
+          ctx.lineTo(5, -1);
+          ctx.lineTo(0, 6);
+          ctx.lineTo(-5, -1);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+          ctx.restore();
         } else if (it.type === 'med-chest') {
           // 💊 HÒM THUỐC CỨU TRỢ VIỆN TRỢ
           const w = it.radius * 1.8;

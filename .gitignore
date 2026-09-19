@@ -1,0 +1,5 @@
+# Test screenshots
+test_screen.png
+test_screen_mobile.png
+.system_generated/
+*.log

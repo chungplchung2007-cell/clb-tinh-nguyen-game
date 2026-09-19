@@ -187,6 +187,83 @@
       border-radius: 8px;
       border: 1px dashed #a7f3d0;
     }
+
+    /* Ghim cố định và chống rung/chạy lung tung cho Quãng đường & Tốc độ */
+    .runner-hud-pinned {
+      position: sticky;
+      top: 8px;
+      z-index: 40;
+      background: rgba(255, 245, 242, 0.96);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 4px 14px rgba(230, 57, 70, 0.12);
+      border: 1.5px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: nowrap;
+      gap: 12px;
+    }
+
+    .hud-pill-distance {
+      min-width: 180px;
+      justify-content: center;
+      font-variant-numeric: tabular-nums;
+      font-feature-settings: "tnum";
+      white-space: nowrap;
+      flex-shrink: 0;
+      text-align: center;
+      letter-spacing: 0.2px;
+      background: white;
+      border: 1.5px solid #ffd6cc;
+      box-shadow: 0 2px 6px rgba(230, 57, 70, 0.08);
+      font-weight: 700;
+    }
+
+    .hud-pill-speed {
+      min-width: 115px;
+      justify-content: center;
+      font-variant-numeric: tabular-nums;
+      font-feature-settings: "tnum";
+      white-space: nowrap;
+      flex-shrink: 0;
+      text-align: center;
+      background: white;
+      border: 1.5px solid #ffd6cc;
+      box-shadow: 0 2px 6px rgba(230, 57, 70, 0.08);
+      font-weight: 700;
+    }
+
+    @media (max-width: 680px) {
+      .runner-hud-pinned {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+        padding: 10px 14px;
+      }
+      .runner-hud-pinned .hud-title {
+        justify-content: center;
+        text-align: center;
+        font-size: 15px;
+      }
+      .runner-hud-pinned .hud-stats {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        width: 100%;
+      }
+      .hud-pill-distance {
+        flex: 1;
+        min-width: 0;
+        font-size: 13px;
+        padding: 6px 8px;
+      }
+      .hud-pill-speed {
+        flex: 0 0 98px;
+        min-width: 98px;
+        font-size: 13px;
+        padding: 6px 8px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -214,11 +291,11 @@
 
     <!-- Game Arena -->
     <main class="game-arena">
-      <div class="game-hud">
+      <div class="game-hud runner-hud-pinned">
         <div class="hud-title">✍️ Hành Trình Thiện Nguyện 5 Cột Mốc</div>
         <div class="hud-stats">
-          <span class="hud-pill" id="runner-distance-hud">Quãng đường: 0.00 km</span>
-          <span class="hud-pill" id="runner-speed-hud">Tốc độ: 1.0x</span>
+          <span class="hud-pill hud-pill-distance" id="runner-distance-hud">Quãng đường: 0.00 km</span>
+          <span class="hud-pill hud-pill-speed" id="runner-speed-hud">Tốc độ: 1.0x</span>
         </div>
       </div>
 
@@ -303,7 +380,7 @@
   </div>
 
   <!-- Scripts -->
-  <script src="js/config.js"></script>
+  <script src="js/config.js?v=20260920"></script>
   <script src="js/audio.js"></script>
 
   <script>
