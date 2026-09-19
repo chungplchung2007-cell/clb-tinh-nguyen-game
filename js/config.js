@@ -8,6 +8,7 @@
 const CLUB_CONFIG = {
   name: "CLB TÌNH NGUYỆN TRƯỜNG Y",
   slogan: "Tuổi trẻ dấn thân • Sẻ chia yêu thương",
+  logo: "assets/club-logo.png",
   primaryColor: "#e63946",
   accentColor: "#ff8c38",
   bannerTitle: "KHOÁC ÁO ĐỎ - NỐI VÒNG TAY LỚN",
@@ -19,6 +20,7 @@ const CLUB_CONFIG = {
 // Toàn bộ đường dẫn asset hình ảnh tập trung tại đây để dễ dàng thay thế
 // ============================================================================
 const IMAGE_CONFIG = {
+  logo: "assets/club-logo.png",            // Logo chính thức của CLB
   heroBanner: "assets/hero-banner.jpg",    // Banner Trang chủ Màn 1
   deptIcons: "assets/dept-icons.jpg",      // Bộ 4 biểu tượng ban Màn 2
   
