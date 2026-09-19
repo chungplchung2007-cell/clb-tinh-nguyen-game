@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Game 2: Vượt Chướng Ngại Vật - Ban Nội Dung</title>
-  <meta name="description" content="Endless Runner kiểu Chrome Dino tính km của Ban Nội Dung - CLB Tình Nguyện Trường Y." />
+  <meta name="description" content="Hành trình 5km tình nguyện vượt chướng ngại của Ban Nội Dung - CLB Tình Nguyện Trường Y: Chạy bộ -> Xe đạp -> Xe máy -> Mô tô PKL -> Ô tô -> Máy bay!" />
 
   <!-- Google Fonts: Be Vietnam Pro & Outfit -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -12,6 +12,181 @@
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet" />
 
   <link rel="stylesheet" href="css/style.css" />
+
+  <style>
+    /* ==========================================================================
+       TINH CHỈNH NÂNG CAO CHO GAME 2 (HÀNH TRÌNH 5 CỘT MỐC)
+       ========================================================================== */
+    .milestone-progress-card {
+      background: var(--bg-glass);
+      backdrop-filter: blur(10px);
+      border: 1.5px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      margin-bottom: 12px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .milestone-track-wrapper {
+      position: relative;
+      padding-top: 10px;
+      padding-bottom: 6px;
+    }
+
+    .milestone-track {
+      position: absolute;
+      top: 24px;
+      left: 20px;
+      right: 20px;
+      height: 8px;
+      background: #ffe3d9;
+      border-radius: var(--radius-full);
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .milestone-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #ff8c38, #e63946, #ff0055);
+      width: 0%;
+      border-radius: var(--radius-full);
+      transition: width 0.25s linear;
+      box-shadow: 0 0 8px rgba(230, 57, 70, 0.5);
+    }
+
+    .milestone-nodes {
+      position: relative;
+      display: flex;
+      justify-content: space-between;
+      z-index: 2;
+    }
+
+    .milestone-node {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: default;
+      transition: var(--transition);
+    }
+
+    .milestone-node .m-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: white;
+      border: 2px solid #ffd6cc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+    }
+
+    .milestone-node .m-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .milestone-node.active .m-icon {
+      border-color: var(--primary);
+      background: #fff0eb;
+      transform: scale(1.15);
+      box-shadow: 0 0 12px rgba(230, 57, 70, 0.4);
+    }
+
+    .milestone-node.active .m-label {
+      color: var(--primary);
+      font-weight: 800;
+    }
+
+    .milestone-node.completed .m-icon {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: white;
+    }
+
+    .canvas-wrapper {
+      position: relative;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+      background: #000;
+    }
+
+    /* Banner Level Up nổi bật trên Canvas */
+    .level-up-banner {
+      position: absolute;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-60px) scale(0.8);
+      background: linear-gradient(135deg, rgba(230, 57, 70, 0.95), rgba(255, 140, 56, 0.95));
+      backdrop-filter: blur(8px);
+      border: 2px solid #ffe3d9;
+      color: white;
+      padding: 10px 24px;
+      border-radius: var(--radius-full);
+      box-shadow: 0 10px 30px rgba(230, 57, 70, 0.5);
+      text-align: center;
+      pointer-events: none;
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      z-index: 20;
+    }
+
+    .level-up-banner.show {
+      transform: translateX(-50%) translateY(0) scale(1);
+      opacity: 1;
+    }
+
+    .level-up-banner .banner-title {
+      font-family: var(--font-title);
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .level-up-banner .banner-desc {
+      font-size: 13px;
+      font-weight: 600;
+      opacity: 0.95;
+    }
+
+    /* Badge góc trái Canvas */
+    .canvas-vehicle-tag {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(6px);
+      border: 1.5px solid var(--border-color);
+      padding: 5px 12px;
+      border-radius: var(--radius-full);
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: var(--shadow-sm);
+      z-index: 10;
+    }
+
+    /* Modal kết quả bổ sung tùy chọn hồi sinh tại checkpoint */
+    .checkpoint-hint {
+      margin-top: 8px;
+      font-size: 12px;
+      color: #059669;
+      font-weight: 600;
+      background: #ecfdf5;
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 1px dashed #a7f3d0;
+    }
+  </style>
 </head>
 <body>
 
@@ -22,7 +197,7 @@
         <div class="club-logo-badge">❤</div>
         <div class="club-title-wrap">
           <h1 id="brand-name">CLB TÌNH NGUYỆN TRƯỜNG Y</h1>
-          <p>Ban Nội dung</p>
+          <p>Ban Nội dung • Chinh Phục 5 Cột Mốc</p>
         </div>
       </a>
 
@@ -39,21 +214,66 @@
     <!-- Game Arena -->
     <main class="game-arena">
       <div class="game-hud">
-        <div class="hud-title">✍️ Chạy Vượt Chướng Ngại Vô Hạn</div>
+        <div class="hud-title">✍️ Hành Trình Thiện Nguyện 5 Cột Mốc</div>
         <div class="hud-stats">
           <span class="hud-pill" id="runner-distance-hud">Quãng đường: 0.00 km</span>
           <span class="hud-pill" id="runner-speed-hud">Tốc độ: 1.0x</span>
         </div>
       </div>
 
+      <!-- Thanh tiến trình 5 Cột mốc -->
+      <div class="milestone-progress-card">
+        <div class="milestone-track-wrapper">
+          <div class="milestone-track">
+            <div class="milestone-fill" id="milestone-fill"></div>
+          </div>
+          <div class="milestone-nodes">
+            <div class="milestone-node active" id="node-0" title="Chạy bộ">
+              <span class="m-icon">🏃</span>
+              <span class="m-label">0km</span>
+            </div>
+            <div class="milestone-node" id="node-1" title="Xe đạp">
+              <span class="m-icon">🚲</span>
+              <span class="m-label">1km</span>
+            </div>
+            <div class="milestone-node" id="node-2" title="Xe máy">
+              <span class="m-icon">🛵</span>
+              <span class="m-label">2km</span>
+            </div>
+            <div class="milestone-node" id="node-3" title="Mô tô PKL">
+              <span class="m-icon">🏍️</span>
+              <span class="m-label">3km</span>
+            </div>
+            <div class="milestone-node" id="node-4" title="Ô tô">
+              <span class="m-icon">🚗</span>
+              <span class="m-label">4km</span>
+            </div>
+            <div class="milestone-node" id="node-5" title="Máy bay - Về đích!">
+              <span class="m-icon">✈️</span>
+              <span class="m-label">5km</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Canvas Khung Trò Chơi -->
       <div class="canvas-wrapper">
         <canvas id="canvas-runner" width="800" height="340"></canvas>
+        
+        <div class="canvas-vehicle-tag" id="canvas-vehicle-tag">
+          <span id="vehicle-icon">🏃</span> <span id="vehicle-title">Chạy bộ</span>
+        </div>
+
+        <div id="level-up-banner" class="level-up-banner">
+          <div class="banner-title" id="banner-title">🎉 LEVEL UP!</div>
+          <div class="banner-desc" id="banner-desc">Nâng cấp xe đạp 🚲</div>
+        </div>
       </div>
 
       <!-- Nút điều khiển di động -->
       <div class="mobile-controls-row">
         <button id="btn-runner-jump" class="btn-mobile-ctrl">
-          <span>🚀 NHẢY LÊN (SPACE / CHẠM)</span>
+          <span>🚀 NHẢY LÊN (SPACE / CHẠM MÀN HÌNH)</span>
         </button>
       </div>
 
@@ -64,7 +284,7 @@
     </main>
   </div>
 
-  <!-- Modal thông báo kết quả -->
+  <!-- Modal thông báo kết quả (Thất bại hoặc Chiến thắng) -->
   <div id="game-modal" class="modal-backdrop">
     <div class="modal-card">
       <div class="modal-icon" id="modal-icon">🏅</div>
@@ -74,7 +294,8 @@
       <div class="modal-stat-box" id="modal-stat-box"></div>
 
       <div class="modal-buttons">
-        <button id="btn-modal-replay" class="btn-primary">Chơi lại</button>
+        <button id="btn-modal-checkpoint" class="btn-primary" style="display:none;">Hồi sinh tại Cột mốc</button>
+        <button id="btn-modal-replay" class="btn-primary">Chơi lại từ đầu</button>
         <a href="index.html" class="btn-secondary">Về trang chủ</a>
       </div>
     </div>
@@ -83,92 +304,169 @@
   <!-- Scripts -->
   <script src="js/config.js"></script>
   <script src="js/audio.js"></script>
-  <script src="js/bg-remover.js"></script>
 
   <script>
+    /**
+     * ========================================================================
+     * NÂNG CẤP GAME RUNNER BAN NỘI DUNG - 60 FPS DELTA-TIME & 5 CỘT MỐC
+     * ========================================================================
+     */
     class RunnerGameApp {
       constructor() {
         this.canvas = document.getElementById('canvas-runner');
         this.ctx = this.canvas.getContext('2d');
         this.distanceHud = document.getElementById('runner-distance-hud');
         this.speedHud = document.getElementById('runner-speed-hud');
+        this.milestoneFill = document.getElementById('milestone-fill');
+        this.vehicleTag = document.getElementById('canvas-vehicle-tag');
+        this.vehicleIcon = document.getElementById('vehicle-icon');
+        this.vehicleTitle = document.getElementById('vehicle-title');
+        this.levelUpBanner = document.getElementById('level-up-banner');
+        this.bannerTitle = document.getElementById('banner-title');
+        this.bannerDesc = document.getElementById('banner-desc');
 
         this.animId = null;
         this.isRunning = false;
+        this.isVictory = false;
+
+        // Vị trí mặt đất
+        this.groundY = 265;
+
+        // Quãng đường (mét) và tốc độ
         this.distanceMeters = 0;
-        this.baseSpeed = 6.2;
-        this.currentSpeed = 6.2;
-        this.groundY = 270;
+        this.baseSpeed = 340; // pixel mỗi giây
+        this.currentSpeed = this.baseSpeed;
 
-        // Sprite nhân vật đã tách nền
-        this.charSprite = null;
+        // Khung thời gian Delta Time
+        this.lastFrameTime = performance.now();
 
-        // Nhân vật
+        // 5 Cấp độ phương tiện:
+        // 0: 0.0 - 1.0 km -> Chạy bộ 🏃
+        // 1: 1.0 - 2.0 km -> Xe đạp 🚲
+        // 2: 2.0 - 3.0 km -> Xe máy 🛵
+        // 3: 3.0 - 4.0 km -> Mô tô PKL 🏍️
+        // 4: 4.0 - 5.0 km -> Ô tô cứu trợ 🚗
+        // 5: >= 5.0 km    -> Máy bay & Chiến thắng ✈️
+        this.vehicleLevel = 0;
+        this.lastReachedLevel = 0;
+        this.checkpointMeters = 0;
+
+        // Thông tin người chơi
         this.player = {
-          x: 90,
+          x: 100,
           y: this.groundY,
-          width: 44,
-          height: 64,
+          width: 52,
+          height: 68,
           vy: 0,
-          jumpPower: -14,
-          gravity: 0.68,
+          jumpPower: -540,  // pixel / giây
+          gravity: 1550,    // pixel / giây^2
           isGrounded: true,
-          bounceAngle: 0
+          coyoteTimer: 0,
+          jumpBufferTimer: 0,
+          suspensionOffset: 0,
+          runCycle: 0
         };
 
+        // Danh sách chướng ngại vật & hiệu ứng
         this.obstacles = [];
-        this.nextObstacleTimer = 80;
+        this.obstacleSpawnDist = 320;
+        this.lastSpawnDist = 0;
 
+        // Biển báo cột mốc dọc đường
+        this.milestoneSigns = [];
+        this.spawnedSignMilestones = new Set();
+
+        // Hệ thống hạt (Bụi, Khói pô, Tia lửa, Pháo hoa chiến thắng)
+        this.particles = [];
+        this.windStreaks = [];
+
+        // Lớp nền Parallax
+        this.mountains = [
+          { x: 0, w: 900, h: 90 },
+          { x: 900, w: 900, h: 90 }
+        ];
+        this.hills = [
+          { x: 0, w: 900, h: 55 },
+          { x: 900, w: 900, h: 55 }
+        ];
         this.clouds = [
-          { x: 120, y: 50, speed: 1.1 },
-          { x: 440, y: 70, speed: 0.8 },
-          { x: 740, y: 45, speed: 1.4 }
+          { x: 80, y: 35, scale: 1.0, speed: 20 },
+          { x: 380, y: 55, scale: 1.3, speed: 16 },
+          { x: 680, y: 25, scale: 0.8, speed: 25 }
         ];
 
-        // Lắng nghe phím nhảy
+        // Máy bay chiến thắng
+        this.planeAnim = {
+          active: false,
+          progress: 0,
+          y: this.groundY,
+          angle: 0
+        };
+
+        this.initEvents();
+      }
+
+      initEvents() {
+        const doJump = (e) => {
+          if (e) e.preventDefault();
+          this.queueJump();
+        };
+
         window.addEventListener('keydown', (e) => {
           if (e.code === 'Space' || e.key === 'ArrowUp') {
             e.preventDefault();
-            this.jump();
+            this.queueJump();
           }
         });
 
-        this.canvas.addEventListener('pointerdown', (e) => {
-          e.preventDefault();
-          this.jump();
-        });
-
-        document.getElementById('btn-runner-jump').addEventListener('pointerdown', (e) => {
-          e.preventDefault();
-          this.jump();
-        });
+        this.canvas.addEventListener('pointerdown', doJump);
+        document.getElementById('btn-runner-jump').addEventListener('pointerdown', doJump);
 
         document.getElementById('btn-modal-replay').addEventListener('click', () => {
           document.getElementById('game-modal').classList.remove('active');
-          this.start();
+          this.start(0);
+        });
+
+        document.getElementById('btn-modal-checkpoint').addEventListener('click', () => {
+          document.getElementById('game-modal').classList.remove('active');
+          this.start(this.checkpointMeters);
         });
       }
 
-      async init() {
-        try {
-          // Tự động tách nền trắng của asset nhân vật áo đỏ
-          this.charSprite = await BackgroundRemover.loadTransparent('assets/volunteer.jpg');
-        } catch (e) {
-          console.log("Dùng đồ họa procedural cho nhân vật");
-        }
-        this.start();
+      queueJump() {
+        if (!this.isRunning || this.isVictory) return;
+        this.player.jumpBufferTimer = 0.14; // Lưu đệm lệnh nhảy 140ms
       }
 
-      start() {
+      start(startMeters = 0) {
         this.isRunning = true;
-        this.distanceMeters = 0;
-        this.currentSpeed = this.baseSpeed;
+        this.isVictory = false;
+        this.distanceMeters = startMeters;
+        this.checkpointMeters = Math.floor(startMeters / 1000) * 1000;
+        
+        this.updateVehicleLevel(true);
+
+        this.currentSpeed = this.baseSpeed + (this.vehicleLevel * 50);
         this.player.y = this.groundY;
         this.player.vy = 0;
         this.player.isGrounded = true;
-        this.obstacles = [];
-        this.nextObstacleTimer = 60;
+        this.player.coyoteTimer = 0;
+        this.player.jumpBufferTimer = 0;
+        this.player.runCycle = 0;
 
+        this.obstacles = [];
+        this.lastSpawnDist = this.distanceMeters;
+        this.particles = [];
+        this.windStreaks = [];
+
+        this.planeAnim = {
+          active: false,
+          progress: 0,
+          y: this.groundY,
+          angle: 0
+        };
+
+        this.lastFrameTime = performance.now();
         if (this.animId) cancelAnimationFrame(this.animId);
         this.loop();
       }
@@ -178,90 +476,327 @@
         if (this.animId) cancelAnimationFrame(this.animId);
       }
 
-      jump() {
-        if (!this.isRunning) return;
-        if (this.player.isGrounded) {
-          this.player.vy = this.player.jumpPower;
-          this.player.isGrounded = false;
-          window.sound.playJump();
-        }
-      }
-
       loop() {
         if (!this.isRunning) return;
-        this.update();
+        const now = performance.now();
+        let dt = (now - this.lastFrameTime) / 1000;
+        if (dt > 0.08) dt = 0.08; // Giới hạn giật lag khi tab ẩn
+        this.lastFrameTime = now;
+
+        this.update(dt);
         this.draw();
+
         this.animId = requestAnimationFrame(() => this.loop());
       }
 
-      update() {
-        this.distanceMeters += (this.currentSpeed * 0.15);
+      update(dt) {
+        // Cập nhật quãng đường
+        const prevMeters = this.distanceMeters;
+        this.distanceMeters += this.currentSpeed * dt * 0.45;
+
+        // Cập nhật HUD Quãng đường & Tốc độ
         const km = (this.distanceMeters / 1000).toFixed(2);
         this.distanceHud.textContent = `Quãng đường: ${km} km`;
-
-        // Tốc độ tăng dần
-        this.currentSpeed = this.baseSpeed + Math.min(8.5, (this.distanceMeters / 500));
         this.speedHud.textContent = `Tốc độ: ${(this.currentSpeed / this.baseSpeed).toFixed(1)}x`;
 
-        // Trọng lực & nhảy
-        this.player.y += this.player.vy;
-        this.player.vy += this.player.gravity;
+        // Cập nhật thanh tiến trình 5km
+        const progressPct = Math.min(100, (this.distanceMeters / 5000) * 100);
+        this.milestoneFill.style.width = `${progressPct}%`;
 
-        if (this.player.y >= this.groundY) {
-          this.player.y = this.groundY;
-          this.player.vy = 0;
-          this.player.isGrounded = true;
+        // Cập nhật trạng thái các node mốc
+        for (let i = 0; i <= 5; i++) {
+          const node = document.getElementById(`node-${i}`);
+          if (node) {
+            if (this.distanceMeters >= i * 1000) {
+              node.classList.add('active');
+              if (this.distanceMeters >= (i + 1) * 1000) node.classList.add('completed');
+              else node.classList.remove('completed');
+            } else {
+              node.classList.remove('active', 'completed');
+            }
+          }
         }
 
-        if (this.player.isGrounded) {
-          this.player.bounceAngle += 0.35;
+        // Kiểm tra biến hình nâng cấp phương tiện
+        this.updateVehicleLevel(false);
+
+        // Kiểm tra điều kiện CHIẾN THẮNG tại 5km
+        if (this.distanceMeters >= 5000 && !this.isVictory) {
+          this.triggerVictory();
+          return;
         }
 
+        // Nếu đang trong hoạt cảnh máy bay cất cánh chiến thắng
+        if (this.isVictory) {
+          this.updateVictorySequence(dt);
+          return;
+        }
+
+        // Tốc độ tăng dần theo từng cấp độ phương tiện
+        const targetSpeed = this.baseSpeed + (this.vehicleLevel * 55) + Math.min(60, (this.distanceMeters % 1000) * 0.06);
+        this.currentSpeed += (targetSpeed - this.currentSpeed) * dt * 2.5;
+
+        // Cập nhật vật lý nhảy của người chơi
+        this.updatePlayerPhysics(dt);
+
+        // Chu kỳ chạy / đạp xe / quay bánh
+        this.player.runCycle += this.currentSpeed * dt * 0.022;
+
+        // Cập nhật lớp nền Parallax
+        this.updateParallax(dt);
+
+        // Tạo biển báo cột mốc sắp tới
+        this.checkMilestoneSigns();
+
+        // Cập nhật & kiểm tra va chạm chướng ngại vật
+        this.updateObstacles(dt);
+
+        // Cập nhật hiệu ứng hạt (khói, bụi, tia lửa)
+        this.updateParticles(dt);
+      }
+
+      updateVehicleLevel(force = false) {
+        let newLevel = 0;
+        if (this.distanceMeters >= 5000) newLevel = 5;
+        else if (this.distanceMeters >= 4000) newLevel = 4;
+        else if (this.distanceMeters >= 3000) newLevel = 3;
+        else if (this.distanceMeters >= 2000) newLevel = 2;
+        else if (this.distanceMeters >= 1000) newLevel = 1;
+
+        if (newLevel !== this.vehicleLevel || force) {
+          const oldLevel = this.vehicleLevel;
+          this.vehicleLevel = newLevel;
+
+          // Cập nhật checkpoint an toàn
+          this.checkpointMeters = this.vehicleLevel * 1000;
+
+          // Cấu hình UI & Banner
+          const configs = [
+            { icon: '🏃', title: 'Chạy bộ', banner: 'BẮT ĐẦU: CHẠY BỘ TIÊN PHONG 🏃', desc: 'Sải bước tự tin cùng đại gia đình áo đỏ!' },
+            { icon: '🚲', title: 'Xe đạp', banner: 'LEVEL UP: XE ĐẠP THỂ THAO 🚲', desc: 'Đạp xe len lỏi khắp nẻo đường tình nguyện!' },
+            { icon: '🛵', title: 'Xe máy', banner: 'LEVEL UP: XE MÁY TIÊN PHONG 🛵', desc: 'Tăng tốc mang nhu yếu phẩm về buôn làng!' },
+            { icon: '🏍️', title: 'Mô tô PKL', banner: 'LEVEL UP: MÔ TÔ PHÂN KHỐI LỚN 🏍️', desc: 'Bứt phá thần tốc vượt qua mọi chông gai!' },
+            { icon: '🚗', title: 'Ô tô cứu trợ', banner: 'LEVEL UP: Ô TÔ CỨU TRỢ ĐỒNG BÀO 🚗', desc: 'Chở trọn vẹn yêu thương tới vùng cao bão lũ!' },
+            { icon: '✈️', title: 'Máy bay', banner: 'CẤT CÁNH: CHUYẾN BAY THIỆN NGUYỆN ✈️', desc: 'Bay cao vươn xa vì cộng đồng nhân ái!' }
+          ];
+
+          const cfg = configs[this.vehicleLevel];
+          this.vehicleIcon.textContent = cfg.icon;
+          this.vehicleTitle.textContent = cfg.title;
+
+          // Điều chỉnh kích thước hitbox theo phương tiện
+          if (this.vehicleLevel === 0) {
+            this.player.width = 46;
+            this.player.height = 68;
+            this.player.jumpPower = -540;
+          } else if (this.vehicleLevel === 1) {
+            this.player.width = 68;
+            this.player.height = 68;
+            this.player.jumpPower = -550;
+          } else if (this.vehicleLevel === 2) {
+            this.player.width = 76;
+            this.player.height = 70;
+            this.player.jumpPower = -560;
+          } else if (this.vehicleLevel === 3) {
+            this.player.width = 84;
+            this.player.height = 70;
+            this.player.jumpPower = -570;
+          } else if (this.vehicleLevel === 4) {
+            this.player.width = 96;
+            this.player.height = 72;
+            this.player.jumpPower = -580;
+          }
+
+          if (!force && newLevel > oldLevel) {
+            this.triggerLevelUpBanner(cfg.banner, cfg.desc);
+            window.sound.playLevelUp();
+          }
+        }
+      }
+
+      triggerLevelUpBanner(title, desc) {
+        this.bannerTitle.textContent = title;
+        this.bannerDesc.textContent = desc;
+        this.levelUpBanner.classList.add('show');
+        
+        // Tạo chùm hạt lấp lánh xung quanh nhân vật
+        for (let i = 0; i < 30; i++) {
+          this.particles.push({
+            x: this.player.x + this.player.width / 2,
+            y: this.player.y - this.player.height / 2,
+            vx: (Math.random() - 0.5) * 280,
+            vy: (Math.random() - 0.8) * 260,
+            color: ['#ffd166', '#ff8c38', '#e63946', '#ffffff'][Math.floor(Math.random() * 4)],
+            size: Math.random() * 6 + 3,
+            life: 1.0,
+            gravity: 200
+          });
+        }
+
+        setTimeout(() => {
+          this.levelUpBanner.classList.remove('show');
+        }, 2200);
+      }
+
+      updatePlayerPhysics(dt) {
+        const p = this.player;
+
+        // Coyote time & Jump Buffer
+        if (p.isGrounded) {
+          p.coyoteTimer = 0.08;
+        } else {
+          p.coyoteTimer -= dt;
+        }
+
+        if (p.jumpBufferTimer > 0) {
+          p.jumpBufferTimer -= dt;
+          if (p.coyoteTimer > 0) {
+            // Kích hoạt nhảy
+            p.vy = p.jumpPower;
+            p.isGrounded = false;
+            p.coyoteTimer = 0;
+            p.jumpBufferTimer = 0;
+            window.sound.playJump();
+
+            // Hiệu ứng hạt bật nhảy
+            for (let i = 0; i < 6; i++) {
+              this.particles.push({
+                x: p.x + p.width * Math.random(),
+                y: this.groundY - 2,
+                vx: -this.currentSpeed * 0.3 + (Math.random() - 0.5) * 80,
+                vy: -Math.random() * 80,
+                color: 'rgba(230, 100, 80, 0.4)',
+                size: Math.random() * 5 + 3,
+                life: 0.4,
+                gravity: 120
+              });
+            }
+          }
+        }
+
+        // Trọng lực
+        p.y += p.vy * dt;
+        p.vy += p.gravity * dt;
+
+        // Tiếp đất
+        if (p.y >= this.groundY) {
+          if (!p.isGrounded && p.vy > 100) {
+            // Nhún lò xo khi tiếp đất
+            p.suspensionOffset = Math.min(10, p.vy * 0.015);
+          }
+          p.y = this.groundY;
+          p.vy = 0;
+          p.isGrounded = true;
+        }
+
+        // Hồi phục phuộc nhún
+        if (p.suspensionOffset > 0) {
+          p.suspensionOffset -= dt * 35;
+          if (p.suspensionOffset < 0) p.suspensionOffset = 0;
+        }
+      }
+
+      updateParallax(dt) {
         // Mây bay
         this.clouds.forEach(c => {
-          c.x -= c.speed;
-          if (c.x < -100) c.x = this.canvas.width + 50;
+          c.x -= (c.speed + this.currentSpeed * 0.05) * dt;
+          if (c.x < -140) c.x = this.canvas.width + 80;
         });
 
-        // Tạo chướng ngại vật ngẫu nhiên
-        this.nextObstacleTimer--;
-        if (this.nextObstacleTimer <= 0) {
-          const type = Math.random() > 0.4 ? 'deadline' : 'paper';
-          this.obstacles.push({
-            x: this.canvas.width + 40,
-            y: this.groundY,
-            width: type === 'deadline' ? 36 : 28,
-            height: type === 'deadline' ? 48 : 38,
-            type: type
-          });
-          this.nextObstacleTimer = Math.floor(70 + Math.random() * 60 - Math.min(30, this.currentSpeed * 2));
+        // Núi xa (tốc độ 0.08x)
+        this.mountains.forEach(m => {
+          m.x -= this.currentSpeed * 0.08 * dt;
+          if (m.x <= -m.w) m.x += m.w * 2;
+        });
+
+        // Đồi gần (tốc độ 0.22x)
+        this.hills.forEach(h => {
+          h.x -= this.currentSpeed * 0.22 * dt;
+          if (h.x <= -h.w) h.x += h.w * 2;
+        });
+      }
+
+      checkMilestoneSigns() {
+        const nextKm = Math.floor(this.distanceMeters / 1000) + 1;
+        if (nextKm <= 5 && !this.spawnedSignMilestones.has(nextKm)) {
+          const targetDist = nextKm * 1000;
+          // Xuất hiện trước 120 mét
+          if (this.distanceMeters >= targetDist - 120) {
+            this.spawnedSignMilestones.add(nextKm);
+            const labels = ['', 'TRẠM 1KM: XE ĐẠP 🚲', 'TRẠM 2KM: XE MÁY 🛵', 'TRẠM 3KM: MÔ TÔ PKL 🏍️', 'TRẠM 4KM: Ô TÔ CỨU TRỢ 🚗', 'ĐÍCH SÂN BAY: 5KM ✈️'];
+            this.milestoneSigns.push({
+              x: this.canvas.width + 40,
+              y: this.groundY,
+              text: `${nextKm}.0 KM`,
+              subText: labels[nextKm],
+              passed: false
+            });
+          }
+        }
+      }
+
+      updateObstacles(dt) {
+        // Di chuyển biển báo cột mốc
+        for (let i = this.milestoneSigns.length - 1; i >= 0; i--) {
+          const sign = this.milestoneSigns[i];
+          sign.x -= this.currentSpeed * dt;
+          if (sign.x < -120) {
+            this.milestoneSigns.splice(i, 1);
+          }
         }
 
-        // Cập nhật chướng ngại vật & kiểm tra va chạm
+        // Sinh chướng ngại vật ngẫu nhiên
+        if (this.distanceMeters - this.lastSpawnDist >= this.obstacleSpawnDist) {
+          // Không sinh chướng ngại vật ngay sát vạch 5km để chuẩn bị cất cánh
+          if (this.distanceMeters < 4900) {
+            const types = ['deadline', 'paper', 'rock'];
+            const chosen = types[Math.floor(Math.random() * types.length)];
+            
+            let obsW = 34, obsH = 44;
+            if (chosen === 'deadline') { obsW = 38; obsH = 48; }
+            else if (chosen === 'paper') { obsW = 32; obsH = 38; }
+            else if (chosen === 'rock') { obsW = 42; obsH = 34; }
+
+            this.obstacles.push({
+              x: this.canvas.width + 40,
+              y: this.groundY,
+              width: obsW,
+              height: obsH,
+              type: chosen
+            });
+
+            // Khoảng cách spawn tiếp theo tùy theo tốc độ
+            this.obstacleSpawnDist = 340 + Math.random() * 220 + (this.currentSpeed * 0.3);
+            this.lastSpawnDist = this.distanceMeters;
+          }
+        }
+
+        // Di chuyển & kiểm tra va chạm
         for (let i = this.obstacles.length - 1; i >= 0; i--) {
           const obs = this.obstacles[i];
-          obs.x -= this.currentSpeed;
+          obs.x -= this.currentSpeed * dt;
 
-          // Hitbox
-          const playerBox = {
-            left: this.player.x + 8,
-            right: this.player.x + this.player.width - 8,
-            top: this.player.y - this.player.height + 8,
-            bottom: this.player.y
+          // Hộp va chạm chính xác (Forgiving Inset Hitbox)
+          const p = this.player;
+          const pBox = {
+            left: p.x + 12,
+            right: p.x + p.width - 12,
+            top: (p.y - p.height) + 12,
+            bottom: p.y - 2
           };
 
           const obsBox = {
-            left: obs.x + 4,
-            right: obs.x + obs.width - 4,
-            top: obs.y - obs.height + 4,
+            left: obs.x + 6,
+            right: obs.x + obs.width - 6,
+            top: (obs.y - obs.height) + 6,
             bottom: obs.y
           };
 
           if (
-            playerBox.left < obsBox.right &&
-            playerBox.right > obsBox.left &&
-            playerBox.top < obsBox.bottom &&
-            playerBox.bottom > obsBox.top
+            pBox.left < obsBox.right &&
+            pBox.right > obsBox.left &&
+            pBox.top < obsBox.bottom &&
+            pBox.bottom > obsBox.top
           ) {
             this.gameOver();
             return;
@@ -273,117 +808,1032 @@
         }
       }
 
+      updateParticles(dt) {
+        // Sinh hạt theo từng phương tiện
+        const p = this.player;
+        if (p.isGrounded) {
+          if (this.vehicleLevel === 0) {
+            // Bụi chạy bộ
+            if (Math.sin(p.runCycle * 2) > 0.8) {
+              this.particles.push({
+                x: p.x + 10,
+                y: this.groundY - 2,
+                vx: -this.currentSpeed * 0.4 + (Math.random() - 0.5) * 40,
+                vy: -Math.random() * 30,
+                color: 'rgba(210, 160, 140, 0.45)',
+                size: Math.random() * 4 + 2,
+                life: 0.35,
+                gravity: 40
+              });
+            }
+          } else if (this.vehicleLevel === 2) {
+            // Khói pô xe máy
+            this.particles.push({
+              x: p.x + 4,
+              y: this.groundY - 14,
+              vx: -this.currentSpeed * 0.25 + (Math.random() - 0.5) * 30,
+              vy: -Math.random() * 40 - 10,
+              color: 'rgba(255, 255, 255, 0.5)',
+              size: Math.random() * 6 + 4,
+              life: 0.5,
+              gravity: -20
+            });
+          } else if (this.vehicleLevel === 3) {
+            // Tia lửa & gió mô tô PKL
+            this.particles.push({
+              x: p.x + 2,
+              y: this.groundY - 18,
+              vx: -this.currentSpeed * 0.35,
+              vy: (Math.random() - 0.5) * 30,
+              color: Math.random() > 0.5 ? '#ff3b00' : '#ffea00',
+              size: Math.random() * 4 + 2,
+              life: 0.25,
+              gravity: 10
+            });
+            // Vệt gió
+            if (Math.random() > 0.4) {
+              this.windStreaks.push({
+                x: this.canvas.width + 20,
+                y: 50 + Math.random() * (this.groundY - 80),
+                len: Math.random() * 60 + 40,
+                speed: this.currentSpeed * 1.5,
+                alpha: Math.random() * 0.4 + 0.2
+              });
+            }
+          } else if (this.vehicleLevel === 4) {
+            // Bụi lốp xe ô tô
+            this.particles.push({
+              x: p.x + 10,
+              y: this.groundY - 2,
+              vx: -this.currentSpeed * 0.5 + (Math.random() - 0.5) * 50,
+              vy: -Math.random() * 45,
+              color: 'rgba(200, 150, 130, 0.5)',
+              size: Math.random() * 6 + 3,
+              life: 0.4,
+              gravity: 60
+            });
+          }
+        }
+
+        // Cập nhật hạt
+        for (let i = this.particles.length - 1; i >= 0; i--) {
+          const pt = this.particles[i];
+          pt.x += pt.vx * dt;
+          pt.y += pt.vy * dt;
+          pt.vy += (pt.gravity || 0) * dt;
+          pt.life -= dt;
+          if (pt.life <= 0) {
+            this.particles.splice(i, 1);
+          }
+        }
+
+        // Cập nhật vệt gió
+        for (let i = this.windStreaks.length - 1; i >= 0; i--) {
+          const ws = this.windStreaks[i];
+          ws.x -= ws.speed * dt;
+          if (ws.x + ws.len < -20) {
+            this.windStreaks.splice(i, 1);
+          }
+        }
+      }
+
+      triggerVictory() {
+        this.isVictory = true;
+        this.obstacles = [];
+        this.planeAnim.active = true;
+        this.planeAnim.progress = 0;
+        this.planeAnim.y = this.groundY - 30;
+        this.planeAnim.angle = 0;
+
+        window.sound.playWin();
+        this.triggerLevelUpBanner("🏆 HOÀN THÀNH 5KM - CẤT CÁNH! ✈️", "Chuyến bay cứu trợ mang yêu thương tới vùng cao!");
+
+        // Pháo hoa giấy (Confetti)
+        for (let i = 0; i < 80; i++) {
+          this.particles.push({
+            x: Math.random() * this.canvas.width,
+            y: Math.random() * 80,
+            vx: (Math.random() - 0.5) * 140,
+            vy: Math.random() * 120 + 40,
+            color: ['#e63946', '#ff8c38', '#ffd166', '#06d6a0', '#118ab2', '#ffffff'][Math.floor(Math.random() * 6)],
+            size: Math.random() * 8 + 4,
+            life: 3.5,
+            gravity: 40
+          });
+        }
+
+        setTimeout(() => {
+          this.showVictoryModal();
+        }, 3200);
+      }
+
+      updateVictorySequence(dt) {
+        this.planeAnim.progress += dt;
+        // Máy bay ngóc đầu và bay lên
+        if (this.planeAnim.angle < 0.28) {
+          this.planeAnim.angle += dt * 0.4;
+        }
+        this.planeAnim.y -= dt * 65;
+        this.player.x += dt * 55;
+
+        // Sinh hạt sao vàng phía sau đuôi máy bay
+        this.particles.push({
+          x: this.player.x - 30,
+          y: this.planeAnim.y + 10 + (Math.random() - 0.5) * 15,
+          vx: -180,
+          vy: (Math.random() - 0.5) * 40,
+          color: Math.random() > 0.5 ? '#ffd166' : '#ffffff',
+          size: Math.random() * 5 + 3,
+          life: 0.6,
+          gravity: 20
+        });
+
+        this.updateParallax(dt);
+        this.updateParticles(dt);
+      }
+
       draw() {
         const w = this.canvas.width;
         const h = this.canvas.height;
-        this.ctx.clearRect(0, 0, w, h);
+        const ctx = this.ctx;
+        ctx.clearRect(0, 0, w, h);
 
-        // Nền trời
-        const skyGrad = this.ctx.createLinearGradient(0, 0, 0, this.groundY);
-        skyGrad.addColorStop(0, '#fff3ed');
-        skyGrad.addColorStop(1, '#ffffff');
-        this.ctx.fillStyle = skyGrad;
-        this.ctx.fillRect(0, 0, w, h);
+        // 1. Bầu trời chuyển sắc linh hoạt
+        const skyGrad = ctx.createLinearGradient(0, 0, 0, this.groundY);
+        if (this.isVictory) {
+          skyGrad.addColorStop(0, '#ffd8be');
+          skyGrad.addColorStop(0.5, '#ffe5d9');
+          skyGrad.addColorStop(1, '#ffffff');
+        } else if (this.vehicleLevel >= 3) {
+          skyGrad.addColorStop(0, '#ffecd1');
+          skyGrad.addColorStop(1, '#ffffff');
+        } else {
+          skyGrad.addColorStop(0, '#fff3ed');
+          skyGrad.addColorStop(1, '#ffffff');
+        }
+        ctx.fillStyle = skyGrad;
+        ctx.fillRect(0, 0, w, h);
 
-        // Mây trang trí
-        this.ctx.fillStyle = "rgba(255, 215, 200, 0.6)";
+        // 2. Mây trời
+        ctx.fillStyle = "rgba(255, 220, 205, 0.65)";
         this.clouds.forEach(c => {
-          this.ctx.beginPath();
-          this.ctx.arc(c.x, c.y, 22, 0, Math.PI * 2);
-          this.ctx.arc(c.x + 20, c.y - 8, 26, 0, Math.PI * 2);
-          this.ctx.arc(c.x + 45, c.y, 20, 0, Math.PI * 2);
-          this.ctx.fill();
+          ctx.beginPath();
+          ctx.arc(c.x, c.y, 22 * c.scale, 0, Math.PI * 2);
+          ctx.arc(c.x + 22 * c.scale, c.y - 8 * c.scale, 28 * c.scale, 0, Math.PI * 2);
+          ctx.arc(c.x + 48 * c.scale, c.y, 20 * c.scale, 0, Math.PI * 2);
+          ctx.fill();
         });
 
-        // Mặt đất
-        this.ctx.strokeStyle = '#e63946';
-        this.ctx.lineWidth = 3;
-        this.ctx.beginPath();
-        this.ctx.moveTo(0, this.groundY);
-        this.ctx.lineTo(w, this.groundY);
-        this.ctx.stroke();
+        // 3. Dãy núi xa (Parallax)
+        ctx.fillStyle = "rgba(240, 185, 175, 0.4)";
+        this.mountains.forEach(m => {
+          ctx.beginPath();
+          ctx.moveTo(m.x, this.groundY);
+          ctx.lineTo(m.x + 180, this.groundY - m.h);
+          ctx.lineTo(m.x + 360, this.groundY - m.h * 0.6);
+          ctx.lineTo(m.x + 540, this.groundY - m.h * 1.1);
+          ctx.lineTo(m.x + 720, this.groundY - m.h * 0.7);
+          ctx.lineTo(m.x + 900, this.groundY);
+          ctx.closePath();
+          ctx.fill();
+        });
 
-        // Gạch di chuyển trên mặt đất
-        this.ctx.fillStyle = '#ff8c38';
-        const offset = Math.floor(this.distanceMeters * 3) % 40;
-        for (let x = -offset; x < w; x += 40) {
-          this.ctx.fillRect(x, this.groundY + 6, 14, 3);
+        // 4. Đồi cây gần (Parallax)
+        ctx.fillStyle = "rgba(235, 155, 140, 0.5)";
+        this.hills.forEach(hl => {
+          ctx.beginPath();
+          ctx.moveTo(hl.x, this.groundY);
+          ctx.quadraticCurveTo(hl.x + 220, this.groundY - hl.h * 1.3, hl.x + 450, this.groundY);
+          ctx.quadraticCurveTo(hl.x + 680, this.groundY - hl.h * 1.1, hl.x + 900, this.groundY);
+          ctx.closePath();
+          ctx.fill();
+        });
+
+        // 5. Mặt đường nhựa & vỉa hè
+        // Đường nhựa
+        const roadGrad = ctx.createLinearGradient(0, this.groundY, 0, h);
+        roadGrad.addColorStop(0, '#3d405b');
+        roadGrad.addColorStop(1, '#2b2d42');
+        ctx.fillStyle = roadGrad;
+        ctx.fillRect(0, this.groundY, w, h - this.groundY);
+
+        // Vạch gờ bó vỉa hè (đỏ - trắng đan xen)
+        const curbW = 40;
+        const curbOffset = Math.floor(this.distanceMeters * 4) % (curbW * 2);
+        for (let x = -curbOffset - curbW * 2; x < w + curbW * 2; x += curbW * 2) {
+          ctx.fillStyle = '#e63946';
+          ctx.fillRect(x, this.groundY, curbW, 6);
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(x + curbW, this.groundY, curbW, 6);
         }
 
-        // Vẽ chướng ngại vật
-        this.obstacles.forEach(obs => {
-          if (obs.type === 'deadline') {
-            this.ctx.fillStyle = '#c1121f';
-            this.ctx.beginPath();
-            this.ctx.roundRect(obs.x, obs.y - obs.height, obs.width, obs.height, 6);
-            this.ctx.fill();
-            this.ctx.fillStyle = 'white';
-            this.ctx.font = 'bold 12px sans-serif';
-            this.ctx.textAlign = 'center';
-            this.ctx.fillText('DL', obs.x + obs.width / 2, obs.y - obs.height / 2 + 4);
-          } else {
-            this.ctx.fillStyle = '#ffd166';
-            this.ctx.beginPath();
-            this.ctx.roundRect(obs.x, obs.y - obs.height, obs.width, obs.height, 4);
-            this.ctx.fill();
-            this.ctx.fillStyle = '#2b2d42';
-            this.ctx.font = '16px sans-serif';
-            this.ctx.textAlign = 'center';
-            this.ctx.fillText('📝', obs.x + obs.width / 2, obs.y - obs.height / 2 + 6);
-          }
+        // Vạch đứt tim đường màu vàng
+        ctx.fillStyle = '#ffb703';
+        const dashOffset = Math.floor(this.distanceMeters * 3.5) % 60;
+        for (let x = -dashOffset; x < w; x += 60) {
+          ctx.fillRect(x, this.groundY + 36, 32, 4);
+        }
+
+        // 6. Biển báo cột mốc dọc đường
+        this.milestoneSigns.forEach(sign => {
+          this.drawMilestoneSign(sign.x, sign.y, sign.text, sign.subText);
         });
 
-        // Vẽ nhân vật
-        this.drawPlayer();
+        // 7. Chướng ngại vật
+        this.obstacles.forEach(obs => {
+          this.drawObstacle(obs);
+        });
+
+        // 8. Vệt gió tốc độ cao
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+        ctx.lineWidth = 1.5;
+        this.windStreaks.forEach(ws => {
+          ctx.beginPath();
+          ctx.moveTo(ws.x, ws.y);
+          ctx.lineTo(ws.x + ws.len, ws.y);
+          ctx.stroke();
+        });
+
+        // 9. Vẽ nhân vật theo từng cấp độ phương tiện
+        this.drawPlayerCharacter();
+
+        // 10. Hạt hiệu ứng
+        this.particles.forEach(pt => {
+          ctx.fillStyle = pt.color;
+          ctx.beginPath();
+          ctx.arc(pt.x, pt.y, Math.max(1, pt.size * (pt.life > 0.5 ? 1 : pt.life * 2)), 0, Math.PI * 2);
+          ctx.fill();
+        });
       }
 
-      drawPlayer() {
+      drawMilestoneSign(x, y, text, subText) {
+        const ctx = this.ctx;
+        ctx.save();
+        // Cột cờ / biển báo
+        ctx.fillStyle = '#8d99ae';
+        ctx.fillRect(x + 14, y - 90, 6, 90);
+
+        // Biển chính màu đỏ viền vàng
+        ctx.fillStyle = '#e63946';
+        ctx.strokeStyle = '#ffd166';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.roundRect(x - 20, y - 92, 74, 38, 6);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 13px Outfit, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(text, x + 17, y - 76);
+
+        ctx.font = 'bold 9px "Be Vietnam Pro", sans-serif';
+        ctx.fillStyle = '#ffe3d9';
+        ctx.fillText("MỐC CHẶNG", x + 17, y - 62);
+
+        ctx.restore();
+      }
+
+      drawObstacle(obs) {
+        const ctx = this.ctx;
+        const x = obs.x;
+        const y = obs.y;
+        const w = obs.width;
+        const h = obs.height;
+
+        ctx.save();
+        if (obs.type === 'deadline') {
+          // Tháp Deadline màu đỏ thẫm
+          ctx.fillStyle = '#c1121f';
+          ctx.beginPath();
+          ctx.roundRect(x, y - h, w, h, 6);
+          ctx.fill();
+
+          // Viền cảnh báo vàng
+          ctx.strokeStyle = '#ffd166';
+          ctx.lineWidth = 2.5;
+          ctx.stroke();
+
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 13px Outfit, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('DL', x + w/2, y - h/2 + 5);
+        } else if (obs.type === 'paper') {
+          // Xấp tài liệu / hồ sơ dày
+          ctx.fillStyle = '#fff8e7';
+          ctx.beginPath();
+          ctx.roundRect(x, y - h, w, h, 4);
+          ctx.fill();
+          ctx.strokeStyle = '#ffb703';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+
+          // Kẹp tài liệu đỏ
+          ctx.fillStyle = '#e63946';
+          ctx.fillRect(x + 4, y - h + 2, w - 8, 5);
+
+          ctx.font = '16px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('📝', x + w/2, y - h/2 + 6);
+        } else {
+          // Tảng đá chướng ngại vật
+          ctx.fillStyle = '#6c757d';
+          ctx.beginPath();
+          ctx.moveTo(x, y);
+          ctx.lineTo(x + 8, y - h);
+          ctx.lineTo(x + w - 6, y - h + 6);
+          ctx.lineTo(x + w, y);
+          ctx.closePath();
+          ctx.fill();
+          ctx.strokeStyle = '#495057';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
+
+      drawPlayerCharacter() {
+        const ctx = this.ctx;
         const p = this.player;
         const x = p.x;
-        const y = p.y;
+        const y = p.y + (p.suspensionOffset || 0);
 
-        this.ctx.save();
+        ctx.save();
 
-        // Bóng đổ
-        this.ctx.fillStyle = "rgba(0, 0, 0, 0.12)";
-        this.ctx.beginPath();
-        this.ctx.ellipse(x + p.width/2, this.groundY, p.width * 0.45, 4, 0, 0, Math.PI * 2);
-        this.ctx.fill();
-
-        if (this.charSprite) {
-          // Nhún nhảy nhẹ khi chạy
-          const bounce = p.isGrounded ? Math.sin(p.bounceAngle) * 3 : 0;
-          this.ctx.drawImage(this.charSprite, x, y - p.height + bounce, p.width, p.height);
-        } else {
-          // Procedural fallback nếu chưa nạp sprite
-          const legSwing = Math.sin(p.bounceAngle) * 10;
-          this.ctx.strokeStyle = '#2b2d42';
-          this.ctx.lineWidth = 4;
-          this.ctx.lineCap = 'round';
-          this.ctx.beginPath();
-          this.ctx.moveTo(x + 14, y - 20);
-          this.ctx.lineTo(x + 14 - legSwing, y);
-          this.ctx.moveTo(x + 30, y - 20);
-          this.ctx.lineTo(x + 30 + legSwing, y);
-          this.ctx.stroke();
-
-          // Áo đỏ
-          this.ctx.fillStyle = '#e63946';
-          this.ctx.beginPath();
-          this.ctx.roundRect(x + 8, y - 48, 28, 30, 6);
-          this.ctx.fill();
-          this.ctx.fillStyle = '#ffffff';
-          this.ctx.fillRect(x + 19, y - 42, 6, 16);
-          this.ctx.fillRect(x + 14, y - 37, 16, 6);
-
-          // Đầu
-          this.ctx.fillStyle = '#ffdfba';
-          this.ctx.beginPath();
-          this.ctx.arc(x + 22, y - 56, 11, 0, Math.PI * 2);
-          this.ctx.fill();
+        // Bóng đổ dưới đất
+        if (p.isGrounded) {
+          ctx.fillStyle = "rgba(0, 0, 0, 0.22)";
+          ctx.beginPath();
+          ctx.ellipse(x + p.width/2, this.groundY, p.width * 0.46, 5, 0, 0, Math.PI * 2);
+          ctx.fill();
         }
 
-        this.ctx.restore();
+        // Vẽ theo từng cấp độ phương tiện
+        if (this.isVictory) {
+          this.drawAirplane(x, this.planeAnim.y, this.planeAnim.angle);
+        } else if (this.vehicleLevel === 0) {
+          this.drawRunnerOnFoot(x, y);
+        } else if (this.vehicleLevel === 1) {
+          this.drawBicycle(x, y);
+        } else if (this.vehicleLevel === 2) {
+          this.drawMotorbike(x, y);
+        } else if (this.vehicleLevel === 3) {
+          this.drawSuperbike(x, y);
+        } else if (this.vehicleLevel === 4) {
+          this.drawCar(x, y);
+        }
+
+        ctx.restore();
+      }
+
+      /**
+       * 1. HOẠT HỌA CHẠY BỘ - BƯỚC CHÂN ĐỘNG HỌC (0.0 - 1.0 km)
+       */
+      drawRunnerOnFoot(x, y) {
+        const ctx = this.ctx;
+        const p = this.player;
+        const cycle = p.runCycle;
+        const isAir = !p.isGrounded;
+
+        // Góc xoay các khớp theo chu kỳ sải bước
+        const leftHipAngle = isAir ? -0.35 : Math.sin(cycle) * 0.65;
+        const rightHipAngle = isAir ? 0.45 : Math.sin(cycle + Math.PI) * 0.65;
+        const bounce = isAir ? 0 : Math.abs(Math.sin(cycle)) * 3;
+
+        const hipX = x + 22;
+        const hipY = y - 30 - bounce;
+
+        // --- Chân sau (Trái) ---
+        this.drawLeg(hipX, hipY, leftHipAngle, cycle, '#1d3557', '#e63946');
+
+        // --- Thân mình & Áo đỏ tình nguyện ---
+        ctx.save();
+        ctx.translate(hipX, hipY);
+        ctx.rotate(0.12); // Nghiêng người về trước khi chạy
+
+        // Thân áo đỏ
+        ctx.fillStyle = '#e63946';
+        ctx.beginPath();
+        ctx.roundRect(-10, -26, 22, 28, 6);
+        ctx.fill();
+
+        // Biểu tượng chữ thập trắng tình nguyện
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(-2, -20, 6, 14);
+        ctx.fillRect(-6, -16, 14, 6);
+
+        // Cổ áo
+        ctx.fillStyle = '#c1121f';
+        ctx.beginPath();
+        ctx.moveTo(-6, -26);
+        ctx.lineTo(0, -21);
+        ctx.lineTo(6, -26);
+        ctx.fill();
+
+        // Đầu & Tóc đỏ anime
+        ctx.fillStyle = '#ffe0bd';
+        ctx.beginPath();
+        ctx.arc(2, -34, 11, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Mắt & Miệng
+        ctx.fillStyle = '#2b2d42';
+        ctx.beginPath();
+        ctx.arc(6, -35, 2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#e63946';
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.arc(5, -31, 3, 0, Math.PI);
+        ctx.stroke();
+
+        // Tóc đỏ & Đuôi ngựa bay phần phật
+        ctx.fillStyle = '#d90429';
+        ctx.beginPath();
+        ctx.arc(0, -36, 12, Math.PI * 0.7, Math.PI * 1.9);
+        ctx.fill();
+
+        // Đuôi ngựa
+        const ponyWave = Math.sin(cycle * 1.5) * 4;
+        ctx.beginPath();
+        ctx.moveTo(-8, -36);
+        ctx.quadraticCurveTo(-22, -42 + ponyWave, -26, -30 + ponyWave);
+        ctx.quadraticCurveTo(-18, -30, -8, -32);
+        ctx.fill();
+
+        // Băng đeo đầu hoặc nơ
+        ctx.fillStyle = '#ff8c38';
+        ctx.fillRect(-9, -38, 18, 3.5);
+
+        // Tay trái vung về sau
+        const leftArmAngle = isAir ? 0.3 : Math.sin(cycle + Math.PI) * 0.7;
+        ctx.strokeStyle = '#e63946';
+        ctx.lineWidth = 5;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(-4, -22);
+        ctx.lineTo(-4 - Math.sin(leftArmAngle) * 14, -22 + Math.cos(leftArmAngle) * 14);
+        ctx.stroke();
+
+        // Tay phải vung về trước cầm sổ tay Ban Nội dung
+        const rightArmAngle = isAir ? -0.4 : Math.sin(cycle) * 0.7;
+        ctx.strokeStyle = '#ffe0bd';
+        ctx.lineWidth = 4.5;
+        ctx.beginPath();
+        const handX = 4 + Math.sin(rightArmAngle) * 14;
+        const handY = -22 + Math.cos(rightArmAngle) * 14;
+        ctx.moveTo(4, -22);
+        ctx.lineTo(handX, handY);
+        ctx.stroke();
+
+        // Cuốn sổ tay & Bút
+        ctx.fillStyle = '#ffd166';
+        ctx.fillRect(handX - 2, handY - 5, 9, 12);
+        ctx.fillStyle = '#118ab2';
+        ctx.fillRect(handX + 5, handY - 7, 2, 8);
+
+        ctx.restore();
+
+        // --- Chân trước (Phải) ---
+        this.drawLeg(hipX, hipY, rightHipAngle, cycle + Math.PI, '#2b2d42', '#e63946');
+      }
+
+      drawLeg(hipX, hipY, angle, cycle, pantsColor, shoeColor) {
+        const ctx = this.ctx;
+        const thighLen = 16;
+        const shinLen = 15;
+
+        // Góc gập gối tự nhiên khi chân lùi về sau
+        const kneeBend = Math.max(0.1, Math.sin(cycle) * 0.85);
+        const kneeX = hipX + Math.sin(angle) * thighLen;
+        const kneeY = hipY + Math.cos(angle) * thighLen;
+
+        const ankleX = kneeX + Math.sin(angle + kneeBend) * shinLen;
+        const ankleY = kneeY + Math.cos(angle + kneeBend) * shinLen;
+
+        // Đùi (Quần sooc)
+        ctx.strokeStyle = pantsColor;
+        ctx.lineWidth = 6;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(hipX, hipY);
+        ctx.lineTo(kneeX, kneeY);
+        ctx.stroke();
+
+        // Cẳng chân (Màu da)
+        ctx.strokeStyle = '#ffe0bd';
+        ctx.lineWidth = 4.5;
+        ctx.beginPath();
+        ctx.moveTo(kneeX, kneeY);
+        ctx.lineTo(ankleX, ankleY);
+        ctx.stroke();
+
+        // Giày thể thao đỏ viền trắng
+        ctx.fillStyle = shoeColor;
+        ctx.beginPath();
+        ctx.roundRect(ankleX - 2, ankleY - 3, 10, 6, 2);
+        ctx.fill();
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(ankleX - 2, ankleY + 1, 10, 2);
+      }
+
+      /**
+       * 2. XE ĐẠP THỂ THAO TÌNH NGUYỆN (1.0 - 2.0 km)
+       */
+      drawBicycle(x, y) {
+        const ctx = this.ctx;
+        const wheelR = 17;
+        const backWx = x + 16, backWy = y - wheelR;
+        const frontWx = x + 62, frontWy = y - wheelR;
+        const crankX = x + 38, crankY = y - wheelR;
+        const saddleX = x + 28, saddleY = y - 44;
+        const handleX = x + 56, handleY = y - 50;
+        const crankAngle = this.player.runCycle * 1.5;
+
+        // Hai bánh xe xoay tít có căm xe
+        this.drawSpokeWheel(backWx, backWy, wheelR, crankAngle);
+        this.drawSpokeWheel(frontWx, frontWy, wheelR, crankAngle);
+
+        // Khung sườn xe đạp màu cam đỏ
+        ctx.strokeStyle = '#e63946';
+        ctx.lineWidth = 3.5;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        // Tam giác sau
+        ctx.moveTo(backWx, backWy);
+        ctx.lineTo(saddleX, saddleY);
+        ctx.lineTo(crankX, crankY);
+        ctx.lineTo(backWx, backWy);
+        // Tam giác trước
+        ctx.lineTo(handleX, handleY);
+        ctx.lineTo(crankX, crankY);
+        ctx.moveTo(saddleX, saddleY);
+        ctx.lineTo(handleX, handleY);
+        // Phuộc trước
+        ctx.moveTo(handleX, handleY);
+        ctx.lineTo(frontWx, frontWy);
+        ctx.stroke();
+
+        // Ghi đông & Yên xe
+        ctx.strokeStyle = '#2b2d42';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(handleX - 4, handleY - 6);
+        ctx.lineTo(handleX + 4, handleY - 3);
+        ctx.stroke();
+        // Yên
+        ctx.fillStyle = '#2b2d42';
+        ctx.beginPath();
+        ctx.roundRect(saddleX - 8, saddleY - 4, 18, 5, 2);
+        ctx.fill();
+
+        // Giỏ xe trước có túi y tế
+        ctx.strokeStyle = '#ffd166';
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(frontWx - 2, handleY + 4, 12, 12);
+        ctx.fillStyle = '#e63946';
+        ctx.fillRect(frontWx, handleY + 6, 8, 8);
+        ctx.fillStyle = 'white';
+        ctx.fillRect(frontWx + 3, handleY + 7, 2, 6);
+        ctx.fillRect(frontWx + 1, handleY + 9, 6, 2);
+
+        // Bàn đạp & Chân người đạp xe
+        const pedalR = 8;
+        const p1x = crankX + Math.cos(crankAngle) * pedalR;
+        const p1y = crankY + Math.sin(crankAngle) * pedalR;
+        const p2x = crankX + Math.cos(crankAngle + Math.PI) * pedalR;
+        const p2y = crankY + Math.sin(crankAngle + Math.PI) * pedalR;
+
+        // Đùi và chân người đạp xe nối từ yên tới bàn đạp
+        ctx.strokeStyle = '#ffe0bd';
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(saddleX, saddleY - 2);
+        ctx.lineTo(p1x, p1y);
+        ctx.stroke();
+        ctx.fillStyle = '#e63946';
+        ctx.fillRect(p1x - 3, p1y - 2, 7, 4);
+
+        // Người áo đỏ ngồi đạp xe
+        this.drawRiderOnVehicle(saddleX + 2, saddleY - 2, handleX, handleY - 3, 0.22);
+      }
+
+      drawSpokeWheel(wx, wy, r, angle) {
+        const ctx = this.ctx;
+        // Lốp cao su
+        ctx.strokeStyle = '#2b2d42';
+        ctx.lineWidth = 3.5;
+        ctx.beginPath();
+        ctx.arc(wx, wy, r, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // Vành & căm xe
+        ctx.strokeStyle = '#adb5bd';
+        ctx.lineWidth = 1;
+        for (let i = 0; i < 6; i++) {
+          const a = angle + (i * Math.PI / 3);
+          ctx.beginPath();
+          ctx.moveTo(wx, wy);
+          ctx.lineTo(wx + Math.cos(a) * (r - 2), wy + Math.sin(a) * (r - 2));
+          ctx.stroke();
+        }
+        // Trục
+        ctx.fillStyle = '#c1121f';
+        ctx.beginPath();
+        ctx.arc(wx, wy, 3, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      /**
+       * 3. XE MÁY TIÊN PHONG CUB/SCOOTER (2.0 - 3.0 km)
+       */
+      drawMotorbike(x, y) {
+        const ctx = this.ctx;
+        const wheelR = 15;
+        const backWx = x + 18, backWy = y - wheelR;
+        const frontWx = x + 66, frontWy = y - wheelR;
+        const angle = this.player.runCycle * 1.8;
+
+        // Hai bánh mâm đúc thể thao
+        this.drawAlloyWheel(backWx, backWy, wheelR, angle);
+        this.drawAlloyWheel(frontWx, frontWy, wheelR, angle);
+
+        // Ống xả pô xe
+        ctx.fillStyle = '#adb5bd';
+        ctx.fillRect(backWx - 10, backWy - 2, 22, 5);
+        ctx.fillStyle = '#495057';
+        ctx.fillRect(backWx - 12, backWy - 3, 4, 7);
+
+        // Thân xe Cub màu đỏ tươi
+        ctx.fillStyle = '#e63946';
+        ctx.beginPath();
+        ctx.moveTo(backWx, backWy - 6);
+        ctx.lineTo(x + 36, y - 26);
+        ctx.lineTo(frontWx - 4, y - 36);
+        ctx.lineTo(frontWx, y - 22);
+        ctx.lineTo(x + 44, y - 10);
+        ctx.closePath();
+        ctx.fill();
+
+        // Yếm xe màu trắng sữa
+        ctx.fillStyle = '#fff8f5';
+        ctx.beginPath();
+        ctx.roundRect(x + 42, y - 42, 14, 26, 4);
+        ctx.fill();
+        ctx.strokeStyle = '#e63946';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        // Đèn pha trước chiếu sáng
+        ctx.fillStyle = '#ffd166';
+        ctx.beginPath();
+        ctx.arc(frontWx - 2, y - 42, 6, -Math.PI * 0.4, Math.PI * 0.4);
+        ctx.fill();
+
+        // Luồng sáng đèn pha
+        const lightGrad = ctx.createLinearGradient(frontWx, y - 42, frontWx + 70, y - 20);
+        lightGrad.addColorStop(0, 'rgba(255, 243, 176, 0.4)');
+        lightGrad.addColorStop(1, 'rgba(255, 243, 176, 0)');
+        ctx.fillStyle = lightGrad;
+        ctx.beginPath();
+        ctx.moveTo(frontWx + 2, y - 44);
+        ctx.lineTo(frontWx + 70, y - 25);
+        ctx.lineTo(frontWx + 70, y - 5);
+        ctx.lineTo(frontWx + 2, y - 40);
+        ctx.closePath();
+        ctx.fill();
+
+        // Baga sau chở thùng hàng cứu trợ + Cờ đỏ
+        ctx.fillStyle = '#8d99ae';
+        ctx.fillRect(backWx - 8, y - 32, 18, 14);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(backWx - 2, y - 28, 6, 6);
+        ctx.fillStyle = '#e63946';
+        ctx.fillRect(backWx, y - 28, 2, 6);
+        ctx.fillRect(backWx - 2, y - 26, 6, 2);
+
+        // Cờ đỏ vẫy sau xe
+        const flagWave = Math.sin(this.player.runCycle * 2) * 3;
+        ctx.strokeStyle = '#2b2d42';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(backWx - 6, y - 32);
+        ctx.lineTo(backWx - 6, y - 50);
+        ctx.stroke();
+
+        ctx.fillStyle = '#e63946';
+        ctx.beginPath();
+        ctx.moveTo(backWx - 6, y - 50);
+        ctx.lineTo(backWx - 22, y - 45 + flagWave);
+        ctx.lineTo(backWx - 6, y - 40);
+        ctx.closePath();
+        ctx.fill();
+
+        // Yên xe
+        ctx.fillStyle = '#2b2d42';
+        ctx.beginPath();
+        ctx.roundRect(x + 24, y - 36, 22, 6, 3);
+        ctx.fill();
+
+        // Người lái xe máy
+        this.drawRiderOnVehicle(x + 32, y - 36, frontWx - 6, y - 44, 0.1);
+      }
+
+      /**
+       * 4. MÔ TÔ PHÂN KHỐI LỚN SIÊU TỐC ĐỘ (3.0 - 4.0 km)
+       */
+      drawSuperbike(x, y) {
+        const ctx = this.ctx;
+        const wheelR = 15;
+        const backWx = x + 18, backWy = y - wheelR;
+        const frontWx = x + 72, frontWy = y - wheelR;
+        const angle = this.player.runCycle * 2.2;
+
+        this.drawAlloyWheel(backWx, backWy, wheelR, angle, '#ffd166');
+        this.drawAlloyWheel(frontWx, frontWy, wheelR, angle, '#ffd166');
+
+        // Pô đao thể thao vểnh cao
+        ctx.fillStyle = '#2b2d42';
+        ctx.beginPath();
+        ctx.moveTo(backWx, y - 10);
+        ctx.lineTo(backWx - 14, y - 22);
+        ctx.lineTo(backWx - 10, y - 25);
+        ctx.lineTo(backWx + 4, y - 14);
+        ctx.closePath();
+        ctx.fill();
+
+        // Thân xe Sportbike hầm hố màu đỏ - đen
+        ctx.fillStyle = '#c1121f';
+        ctx.beginPath();
+        ctx.moveTo(backWx - 4, y - 32);
+        ctx.lineTo(x + 42, y - 38);
+        ctx.lineTo(frontWx - 6, y - 46);
+        ctx.lineTo(frontWx + 2, y - 38);
+        ctx.lineTo(x + 50, y - 12);
+        ctx.lineTo(backWx + 4, y - 12);
+        ctx.closePath();
+        ctx.fill();
+
+        // Hốc gió carbon & tem xe vàng
+        ctx.fillStyle = '#2b2d42';
+        ctx.beginPath();
+        ctx.moveTo(x + 36, y - 32);
+        ctx.lineTo(frontWx - 12, y - 38);
+        ctx.lineTo(frontWx - 8, y - 24);
+        ctx.lineTo(x + 40, y - 20);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.fillStyle = '#ffb703';
+        ctx.fillRect(x + 44, y - 30, 16, 2.5);
+
+        // Kính chắn gió khí động học
+        ctx.fillStyle = 'rgba(100, 200, 255, 0.4)';
+        ctx.beginPath();
+        ctx.moveTo(frontWx - 8, y - 46);
+        ctx.lineTo(frontWx - 2, y - 56);
+        ctx.lineTo(frontWx + 2, y - 46);
+        ctx.closePath();
+        ctx.fill();
+
+        // Đèn LED kép sắc lẹm
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(frontWx, y - 43, 3.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Người lái rạp người núp gió
+        this.drawRiderOnVehicle(x + 36, y - 36, frontWx - 8, y - 48, 0.38, true);
+      }
+
+      /**
+       * 5. Ô TÔ CỨU TRỢ VÙNG CAO (4.0 - 5.0 km)
+       */
+      drawCar(x, y) {
+        const ctx = this.ctx;
+        const wheelR = 16;
+        const backWx = x + 24, backWy = y - wheelR;
+        const frontWx = x + 76, frontWy = y - wheelR;
+        const angle = this.player.runCycle * 2.0;
+
+        // Thân xe Van/SUV cứu trợ màu đỏ đô & nóc trắng
+        const carH = 46;
+        const carTopY = y - wheelR - carH;
+
+        // Khung thân xe
+        ctx.fillStyle = '#e63946';
+        ctx.beginPath();
+        ctx.roundRect(x + 4, carTopY + 14, 92, 34, 6);
+        ctx.fill();
+
+        // Nóc cabin xe màu trắng
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.moveTo(x + 12, carTopY + 14);
+        ctx.lineTo(x + 28, carTopY);
+        ctx.lineTo(x + 72, carTopY);
+        ctx.lineTo(x + 84, carTopY + 14);
+        ctx.closePath();
+        ctx.fill();
+
+        // Kính chắn gió phía trước & bên hông
+        ctx.fillStyle = '#a8dadc';
+        ctx.beginPath();
+        ctx.moveTo(x + 48, carTopY + 12);
+        ctx.lineTo(x + 50, carTopY + 4);
+        ctx.lineTo(x + 70, carTopY + 4);
+        ctx.lineTo(x + 78, carTopY + 12);
+        ctx.closePath();
+        ctx.fill();
+
+        // Cửa sổ hông có nhân vật vẫy tay
+        ctx.fillStyle = '#a8dadc';
+        ctx.fillRect(x + 24, carTopY + 4, 20, 9);
+
+        // Khuôn mặt nhân vật bên trong kính
+        ctx.fillStyle = '#ffe0bd';
+        ctx.beginPath();
+        ctx.arc(x + 34, carTopY + 9, 5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#e63946';
+        ctx.beginPath();
+        ctx.arc(x + 32, carTopY + 8, 5, Math.PI * 0.6, Math.PI * 1.8);
+        ctx.fill();
+
+        // Logo CLB Tình Nguyện & Chữ thập đỏ trên thân xe
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(x + 50, carTopY + 30, 9, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#e63946';
+        ctx.fillRect(x + 48, carTopY + 24, 4, 12);
+        ctx.fillRect(x + 44, carTopY + 28, 12, 4);
+
+        // Đèn pha trước
+        ctx.fillStyle = '#ffd166';
+        ctx.beginPath();
+        ctx.roundRect(x + 92, carTopY + 26, 5, 8, 2);
+        ctx.fill();
+
+        // Bánh xe địa hình to bản
+        this.drawAlloyWheel(backWx, backWy, wheelR, angle, '#c1121f');
+        this.drawAlloyWheel(frontWx, frontWy, wheelR, angle, '#c1121f');
+      }
+
+      /**
+       * 6. MÁY BAY TÌNH NGUYỆN CẤT CÁNH CHIẾN THẮNG (5.0 km)
+       */
+      drawAirplane(x, y, angle) {
+        const ctx = this.ctx;
+        ctx.save();
+        ctx.translate(x + 30, y);
+        ctx.rotate(-angle);
+
+        // Thân máy bay màu trắng viền đỏ
+        ctx.fillStyle = '#ffffff';
+        ctx.strokeStyle = '#e63946';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.moveTo(55, 0); // Mũi máy bay
+        ctx.quadraticCurveTo(30, -18, -40, -14); // Lưng
+        ctx.lineTo(-65, -34); // Đuôi đứng
+        ctx.lineTo(-72, -34);
+        ctx.lineTo(-58, 2);
+        ctx.quadraticCurveTo(-20, 14, 55, 0); // Bụng
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // Cánh máy bay
+        ctx.fillStyle = '#e63946';
+        ctx.beginPath();
+        ctx.moveTo(10, 2);
+        ctx.lineTo(-14, 28);
+        ctx.lineTo(-28, 28);
+        ctx.lineTo(-8, 2);
+        ctx.closePath();
+        ctx.fill();
+
+        // Kính buồng lái
+        ctx.fillStyle = '#457b9d';
+        ctx.beginPath();
+        ctx.roundRect(24, -12, 14, 7, 2);
+        ctx.fill();
+
+        // Chữ thập đỏ trên thân máy bay
+        ctx.fillStyle = '#e63946';
+        ctx.fillRect(-15, -8, 4, 12);
+        ctx.fillRect(-19, -4, 12, 4);
+
+        // Cánh quạt mũi quay tít
+        const propAngle = this.player.runCycle * 4;
+        ctx.strokeStyle = '#2b2d42';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(55, -Math.sin(propAngle) * 16);
+        ctx.lineTo(55, Math.sin(propAngle) * 16);
+        ctx.stroke();
+
+        ctx.restore();
+      }
+
+      drawAlloyWheel(wx, wy, r, angle, hubColor = '#ffffff') {
+        const ctx = this.ctx;
+        // Lốp cao su dầy
+        ctx.fillStyle = '#2b2d42';
+        ctx.beginPath();
+        ctx.arc(wx, wy, r, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Vành mâm hợp kim
+        ctx.strokeStyle = '#adb5bd';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.arc(wx, wy, r - 3.5, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // Chấu mâm xe xoay
+        ctx.strokeStyle = '#e9ecef';
+        ctx.lineWidth = 2;
+        for (let i = 0; i < 4; i++) {
+          const a = angle + (i * Math.PI / 2);
+          ctx.beginPath();
+          ctx.moveTo(wx, wy);
+          ctx.lineTo(wx + Math.cos(a) * (r - 4), wy + Math.sin(a) * (r - 4));
+          ctx.stroke();
+        }
+
+        // Trục giữa
+        ctx.fillStyle = hubColor;
+        ctx.beginPath();
+        ctx.arc(wx, wy, 3.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      drawRiderOnVehicle(hipX, hipY, handTargetX, handTargetY, forwardLean = 0.15, hasHelmet = false) {
+        const ctx = this.ctx;
+        ctx.save();
+        ctx.translate(hipX, hipY);
+        ctx.rotate(forwardLean);
+
+        // Thân áo đỏ
+        ctx.fillStyle = '#e63946';
+        ctx.beginPath();
+        ctx.roundRect(-8, -24, 18, 24, 4);
+        ctx.fill();
+
+        // Chữ thập trắng
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(-1, -18, 4, 10);
+        ctx.fillRect(-4, -15, 10, 4);
+
+        // Đầu & Tóc / Mũ bảo hiểm
+        if (hasHelmet) {
+          // Mũ bảo hiểm thể thao có kính
+          ctx.fillStyle = '#c1121f';
+          ctx.beginPath();
+          ctx.arc(4, -31, 10, 0, Math.PI * 2);
+          ctx.fill();
+          // Kính kính chống chói
+          ctx.fillStyle = '#ffd166';
+          ctx.beginPath();
+          ctx.arc(8, -31, 7, -Math.PI * 0.3, Math.PI * 0.3);
+          ctx.fill();
+        } else {
+          // Khuôn mặt anime
+          ctx.fillStyle = '#ffe0bd';
+          ctx.beginPath();
+          ctx.arc(3, -31, 9, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = '#2b2d42';
+          ctx.beginPath();
+          ctx.arc(7, -32, 1.8, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Mũ bảo hiểm nửa đầu đỏ / tóc đỏ
+          ctx.fillStyle = '#d90429';
+          ctx.beginPath();
+          ctx.arc(1, -33, 10, Math.PI * 0.7, Math.PI * 1.9);
+          ctx.fill();
+          // Đuôi tóc bay
+          const pony = Math.sin(this.player.runCycle * 1.8) * 4;
+          ctx.beginPath();
+          ctx.moveTo(-6, -32);
+          ctx.quadraticCurveTo(-18, -36 + pony, -22, -26 + pony);
+          ctx.quadraticCurveTo(-14, -26, -6, -28);
+          ctx.fill();
+        }
+
+        // Cánh tay vươn tới ghi-đông
+        ctx.strokeStyle = '#ffe0bd';
+        ctx.lineWidth = 4;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(3, -18);
+        ctx.lineTo(handTargetX - hipX, handTargetY - hipY);
+        ctx.stroke();
+
+        ctx.restore();
       }
 
       gameOver() {
@@ -393,19 +1843,66 @@
 
         setTimeout(() => {
           const modal = document.getElementById('game-modal');
+          const modalIcon = document.getElementById('modal-icon');
+          const modalTitle = document.getElementById('modal-title');
+          const modalDesc = document.getElementById('modal-desc');
           const modalStat = document.getElementById('modal-stat-box');
+          const btnCheckpoint = document.getElementById('btn-modal-checkpoint');
+
+          modalIcon.textContent = '🏅';
+          modalTitle.textContent = 'Hành Trình Tạm Dừng!';
+          modalDesc.textContent = 'Bạn đã dốc hết trái tim nhiệt huyết vượt ngàn chông gai cùng Ban Nội dung!';
+          
+          let cpInfo = '';
+          if (this.checkpointMeters > 0) {
+            btnCheckpoint.style.display = 'inline-block';
+            btnCheckpoint.textContent = `Hồi sinh tại Cột mốc ${(this.checkpointMeters / 1000)} km`;
+            cpInfo = `<div class="checkpoint-hint">💡 Đã lưu điểm mốc ${(this.checkpointMeters / 1000)} km. Bạn có thể hồi sinh ngay!</div>`;
+          } else {
+            btnCheckpoint.style.display = 'none';
+          }
+
           modalStat.innerHTML = `
-            <div>Bạn đã đi được: <strong>${km} km</strong></div>
-            <div>Tinh thần: Kiên cường & Giàu cảm xúc!</div>
+            <div>Quãng đường đã đi: <strong>${km} km</strong></div>
+            <div>Cột mốc cao nhất: <strong>${this.vehicleTitle.textContent} ${this.vehicleIcon.textContent}</strong></div>
+            <div>Tinh thần: Kiên cường • Không bỏ cuộc!</div>
+            ${cpInfo}
           `;
           modal.classList.add('active');
         }, 350);
       }
+
+      showVictoryModal() {
+        this.stop();
+        const modal = document.getElementById('game-modal');
+        const modalIcon = document.getElementById('modal-icon');
+        const modalTitle = document.getElementById('modal-title');
+        const modalDesc = document.getElementById('modal-desc');
+        const modalStat = document.getElementById('modal-stat-box');
+        const btnCheckpoint = document.getElementById('btn-modal-checkpoint');
+
+        btnCheckpoint.style.display = 'none';
+        modalIcon.textContent = '🏆';
+        modalTitle.textContent = 'CHIẾN THẮNG HOÀNG KIM! 5.0 KM';
+        modalDesc.textContent = 'Xuất sắc! Chuyến bay cứu trợ của CLB Tình Nguyện Trường Y đã cất cánh thành công mang thuốc men và niềm vui tới các em nhỏ vùng cao!';
+
+        modalStat.innerHTML = `
+          <div style="color:#059669; font-weight:800; font-size:16px; margin-bottom:6px;">🎉 HOÀN THÀNH 100% HÀNH TRÌNH!</div>
+          <div>🏃 0 - 1km: Chạy bộ dẻo dai</div>
+          <div>🚲 1 - 2km: Đạp xe bền bỉ</div>
+          <div>🛵 2 - 3km: Xe máy tiên phong</div>
+          <div>🏍️ 3 - 4km: Mô tô phân khối lớn bứt phá</div>
+          <div>🚗 4 - 5km: Ô tô cứu trợ vượt bão giông</div>
+          <div>✈️ 5km+: Cất cánh chuyến bay hy vọng!</div>
+        `;
+        modal.classList.add('active');
+      }
     }
 
+    // Khởi tạo trò chơi
     window.addEventListener('DOMContentLoaded', () => {
       const game = new RunnerGameApp();
-      game.init();
+      game.start(0);
     });
   </script>
 </body>

@@ -94,7 +94,7 @@ const DEPARTMENTS_DATA = {
     btnLabel: "Bắt đầu chạy",
     mission: "🏍 Là người tiên phong, đi đến những vùng đất mới, tìm hiểu, khảo sát và xây dựng nên 'linh hồn' cho mỗi chương trình.",
     skills: "Kỹ năng viết lách giàu cảm xúc, sáng tạo nội dung, lên kế hoạch hoạt động thiện nguyện.",
-    guide: "Nhấn phím Space / Mũi tên Lên hoặc chạm màn hình để nhảy qua chướng ngại vật. Chạy càng xa km càng cao!",
+    guide: "Bấm Space hoặc chạm màn hình để nhảy né chướng ngại vật. Chinh phục 5km: Chạy bộ (0km) ➔ Xe đạp (1km) ➔ Xe máy (2km) ➔ Mô tô PKL (3km) ➔ Ô tô (4km) ➔ Cất cánh Máy bay (5km) chiến thắng!",
     image: "assets/dept-noidung-art.png",
     imageKey: "anh5"
   },
