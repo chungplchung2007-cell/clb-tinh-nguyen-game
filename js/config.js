@@ -64,10 +64,10 @@ const PUZZLE_IMAGES = [
 // level: Màn chơi; target: Số tiền/vàng cần đạt; time: Giới hạn thời gian (giây)
 // ============================================================================
 const GOLD_LEVELS = [
-  { level: 1, target: 650, time: 60 },
-  { level: 2, target: 1350, time: 60 },
-  { level: 3, target: 2200, time: 55 },
-  { level: 4, target: 3200, time: 50 }
+  { level: 1, target: 1200, time: 50 },
+  { level: 2, target: 2400, time: 45 },
+  { level: 3, target: 3600, time: 40 },
+  { level: 4, target: 5000, time: 40 }
 ];
 
 // Dữ liệu chi tiết về 4 ban chuyên môn
