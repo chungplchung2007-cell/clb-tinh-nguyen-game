@@ -108,7 +108,7 @@ const DEPARTMENTS_DATA = {
     btnLabel: "Chơi ngay",
     mission: "🪙 Là người đảm bảo sự bền vững cho mọi hoạt động, từ việc quản lý quỹ, gây quỹ đến việc đề xuất các giải pháp chi tiêu tối ưu.",
     skills: "Kỹ năng đối ngoại, thương thuyết tài trợ, quản trị tài chính và dự trù ngân sách.",
-    guide: "Canh móc câu dao động trúng vàng rồi bấm Space hoặc chạm màn hình để phóng móc câu gom kinh phí về kho.",
+    guide: "Bấm Space để phóng móc câu gom vàng, kim cương & hòm thuốc cứu trợ. Bấm phím W hoặc nút 🧨 để nổ đá khi lỡ câu trúng! Gom đủ kinh phí qua 4 chiến dịch!",
     image: "assets/dept-taichinh-art.png",
     imageKey: "anh6"
   },
@@ -122,7 +122,7 @@ const DEPARTMENTS_DATA = {
     btnLabel: "Chơi ngay",
     mission: "💻 Là 'xương sống' của CLB, đảm bảo mọi quy trình vận hành trơn tru, quản lý thông tin nhân sự trong câu lạc bộ.",
     skills: "Quản trị nhân sự, lắng nghe, kết nối con người, sắp xếp công việc khoa học.",
-    guide: "Dùng phím Mũi tên Lên/Xuống hoặc nút cảm ứng để chuyển làn thu nhận tân binh áo đỏ và né vật cản.",
+    guide: "Dùng phím W/S hoặc Mũi tên để chuyển 3 làn chiêu mộ tân binh. Nhặt Loa phát thanh 📢 hút tân binh 3 làn, Trà sữa 🧋 khiên bất tử húc bay vật cản!",
     image: "assets/dept-nhansu-art.png",
     imageKey: "anh7"
   }

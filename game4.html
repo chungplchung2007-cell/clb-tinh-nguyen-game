@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Game 4: Quản Lý Nhân Lực - Ban Hành Chính & Nhân Sự</title>
-  <meta name="description" content="Mini-game chạy 3 làn chiêu mộ nhân sự áo đỏ kiểu Zombie Tsunami của Ban Hành Chính - Nhân Sự." />
+  <meta name="description" content="Đại chiến dịch tuyển quân K24 chiêu mộ đội ngũ áo đỏ của Ban Hành Chính - Nhân Sự: Loa phát thanh hút ứng viên, Trà sữa khiên bất tử, Hồ sơ vàng & danh hiệu Đại gia đình vững mạnh!" />
 
   <!-- Google Fonts: Be Vietnam Pro & Outfit -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -12,6 +12,95 @@
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet" />
 
   <link rel="stylesheet" href="css/style.css" />
+
+  <style>
+    /* ==========================================================================
+       TINH CHỈNH ĐỒ HỌA SẮC NÉT & HUD CHO GAME 4 BAN NHÂN SỰ
+       ========================================================================== */
+    .campaign-banner-squad {
+      background: linear-gradient(135deg, #e63946, #ff8c38);
+      color: white;
+      padding: 10px 18px;
+      border-radius: var(--radius-sm);
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 700;
+      box-shadow: var(--shadow-sm);
+      border: 1.5px solid rgba(255, 255, 255, 0.25);
+    }
+
+    .canvas-wrapper {
+      position: relative;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+      background: #1d3557;
+      border: 2px solid var(--border-color);
+    }
+
+    /* Thẻ thông báo Buff đang kích hoạt */
+    .active-buff-container {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      z-index: 10;
+    }
+
+    .buff-badge {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(6px);
+      padding: 5px 12px;
+      border-radius: var(--radius-full);
+      font-size: 12px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: var(--shadow-sm);
+      animation: pulse 1s infinite alternate;
+    }
+
+    .buff-badge.magnet {
+      border: 1.5px solid #ffb703;
+      color: #d90429;
+    }
+
+    .buff-badge.shield {
+      border: 1.5px solid #06d6a0;
+      color: #059669;
+    }
+
+    @keyframes pulse {
+      from { transform: scale(1); }
+      to { transform: scale(1.05); }
+    }
+
+    /* Cột mốc danh hiệu đội ngũ */
+    .rank-badge-tag {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(6px);
+      border: 1.5px solid var(--primary);
+      padding: 5px 14px;
+      border-radius: var(--radius-full);
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: var(--shadow-sm);
+      z-index: 10;
+    }
+  </style>
 </head>
 <body>
 
@@ -22,7 +111,7 @@
         <div class="club-logo-badge">❤</div>
         <div class="club-title-wrap">
           <h1 id="brand-name">CLB TÌNH NGUYỆN TRƯỜNG Y</h1>
-          <p>Ban Hành chính - Nhân sự</p>
+          <p>Ban Hành chính - Nhân sự • Chiêu Mộ Đội Ngũ</p>
         </div>
       </a>
 
@@ -38,26 +127,46 @@
 
     <!-- Game Arena -->
     <main class="game-arena">
+      <!-- Banner Chiến dịch tuyển quân K24 -->
+      <div class="campaign-banner-squad">
+        <div>📢 ĐẠI CHIẾN DỊCH TUYỂN QUÂN K24: KHOÁC ÁO ĐỎ NỐI VÒNG TAY LỚN</div>
+        <div style="font-size: 12px; opacity: 0.95;">Dẫn dắt đoàn quân chiêu mộ tân binh tài năng!</div>
+      </div>
+
       <div class="game-hud">
-        <div class="hud-title">🤝 Chiêu Mộ Đội Ngũ Áo Đỏ (3 Làn)</div>
+        <div class="hud-title">🤝 Quân Số Tình Nguyện</div>
         <div class="hud-stats">
-          <span class="hud-pill" id="squad-count-hud">Nhân lực: 3</span>
-          <span class="hud-pill" id="squad-peak-hud">Cao nhất: 3</span>
-          <span class="hud-pill" id="squad-total-hud">Đã tuyển: 0</span>
+          <span class="hud-pill" id="squad-count-hud">👥 Quân số: 3</span>
+          <span class="hud-pill" id="squad-peak-hud">⭐ Kỷ lục: 3</span>
+          <span class="hud-pill" id="squad-total-hud">🎯 Đã tuyển: 0</span>
         </div>
       </div>
 
+      <!-- Canvas Khung Trò Chơi 3 Làn Siêu Nét -->
       <div class="canvas-wrapper">
-        <canvas id="canvas-squad" width="800" height="340"></canvas>
+        <canvas id="canvas-squad" width="800" height="360"></canvas>
+        
+        <div class="rank-badge-tag" id="rank-badge-tag">
+          <span id="rank-icon">🥉</span> <span id="rank-title">Đội Tiên Phong</span>
+        </div>
+
+        <div class="active-buff-container">
+          <div class="buff-badge magnet" id="buff-magnet-tag" style="display: none;">
+            <span>📢 HÚT TÂN BINH (3 LÀN)</span> <strong id="magnet-time">7s</strong>
+          </div>
+          <div class="buff-badge shield" id="buff-shield-tag" style="display: none;">
+            <span>🧋 KHIÊN BẤT TỬ PHÁ ĐÁ</span> <strong id="shield-time">5s</strong>
+          </div>
+        </div>
       </div>
 
       <!-- Phím đổi làn di động -->
       <div class="mobile-controls-row">
         <button id="btn-lane-up" class="btn-mobile-ctrl">
-          <span>⬆ LÀN TRÊN (▲ / W)</span>
+          <span>⬆ LÀN TRÊN (PHÍM W / ▲)</span>
         </button>
         <button id="btn-lane-down" class="btn-mobile-ctrl">
-          <span>⬇ LÀN DƯỚI (▼ / S)</span>
+          <span>⬇ LÀN DƯỚI (PHÍM S / ▼)</span>
         </button>
       </div>
 
@@ -72,8 +181,8 @@
   <div id="game-modal" class="modal-backdrop">
     <div class="modal-card">
       <div class="modal-icon" id="modal-icon">🤝</div>
-      <h3 class="modal-title" id="modal-title">Tổng kết Chiêu Mộ Nhân Sự</h3>
-      <p class="modal-message" id="modal-desc">Bạn đã dẫn dắt đoàn tình nguyện viên rất cống hiến!</p>
+      <h3 class="modal-title" id="modal-title">Tổng Kết Chiến Dịch Tuyển Quân</h3>
+      <p class="modal-message" id="modal-desc">Bạn đã dẫn dắt đoàn quân áo đỏ rất xuất sắc!</p>
       
       <div class="modal-stat-box" id="modal-stat-box"></div>
 
@@ -87,9 +196,13 @@
   <!-- Scripts -->
   <script src="js/config.js"></script>
   <script src="js/audio.js"></script>
-  <script src="js/bg-remover.js"></script>
 
   <script>
+    /**
+     * ========================================================================
+     * NÂNG CẤP GAME BAN NHÂN SỰ: ĐỒ HỌA SẮC NÉT, LOA HÚT TÂN BINH & KHIÊN TRÀ SỮA
+     * ========================================================================
+     */
     class SquadGameApp {
       constructor() {
         this.canvas = document.getElementById('canvas-squad');
@@ -97,29 +210,44 @@
         this.squadCountHud = document.getElementById('squad-count-hud');
         this.squadPeakHud = document.getElementById('squad-peak-hud');
         this.squadTotalHud = document.getElementById('squad-total-hud');
+        this.rankIcon = document.getElementById('rank-icon');
+        this.rankTitle = document.getElementById('rank-title');
+        this.buffMagnetTag = document.getElementById('buff-magnet-tag');
+        this.magnetTime = document.getElementById('magnet-time');
+        this.buffShieldTag = document.getElementById('buff-shield-tag');
+        this.shieldTime = document.getElementById('shield-time');
 
         this.animId = null;
         this.isRunning = false;
 
-        // 3 làn đường: 0 (Trên), 1 (Giữa), 2 (Dưới)
-        this.lanesY = [85, 170, 255];
+        // 3 Làn đường rõ nét
+        this.lanesY = [85, 180, 275];
         this.currentLane = 1;
         this.targetLane = 1;
 
         this.squadCount = 3;
         this.peakSquadCount = 3;
         this.totalRecruited = 0;
-        this.speed = 5.2;
+        this.baseSpeed = 5.2;
+        this.speed = this.baseSpeed;
 
         this.members = [];
         this.items = [];
-        this.spawnTimer = 70;
+        this.particles = [];
+        this.floatingTexts = [];
+        this.spawnTimer = 60;
 
-        // Sprites tự động tách nền
-        this.volunteerSprite = null;
-        this.candidateSprite = null;
+        // Buffs
+        this.magnetTimer = 0; // Loa phát thanh hút ứng viên 3 làn
+        this.shieldTimer = 0; // Trà sữa khiên bất tử
 
-        // Phím di chuyển
+        this.roadOffset = 0;
+        this.runCycle = 0;
+
+        this.initEvents();
+      }
+
+      initEvents() {
         window.addEventListener('keydown', (e) => {
           if (e.code === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
             e.preventDefault();
@@ -152,9 +280,9 @@
           if (touchStartY !== null && e.changedTouches && e.changedTouches[0]) {
             const touchEndY = e.changedTouches[0].clientY;
             const diffY = touchEndY - touchStartY;
-            if (diffY < -28) {
+            if (diffY < -25) {
               this.changeLane(-1);
-            } else if (diffY > 28) {
+            } else if (diffY > 25) {
               this.changeLane(1);
             }
             touchStartY = null;
@@ -167,18 +295,7 @@
         });
       }
 
-      async init() {
-        try {
-          // Tự động tách nền trắng 2 sprite chính
-          const [vol, can] = await Promise.all([
-            BackgroundRemover.loadTransparent('assets/volunteer.jpg'),
-            BackgroundRemover.loadTransparent('assets/candidate.jpg')
-          ]);
-          this.volunteerSprite = vol;
-          this.candidateSprite = can;
-        } catch (e) {
-          console.log("Dùng đồ họa procedural cho nhân vật");
-        }
+      init() {
         this.start();
       }
 
@@ -189,9 +306,15 @@
         this.squadCount = 3;
         this.peakSquadCount = 3;
         this.totalRecruited = 0;
-        this.speed = 5.2;
+        this.speed = this.baseSpeed;
         this.items = [];
-        this.spawnTimer = 60;
+        this.particles = [];
+        this.floatingTexts = [];
+        this.spawnTimer = 50;
+        this.magnetTimer = 0;
+        this.shieldTimer = 0;
+        this.buffMagnetTag.style.display = 'none';
+        this.buffShieldTag.style.display = 'none';
 
         this.initSquadMembers();
         this.updateHud();
@@ -209,9 +332,10 @@
         this.members = [];
         for (let i = 0; i < this.squadCount; i++) {
           this.members.push({
-            offsetX: -(i * 26),
+            offsetX: -(i * 28),
             laneY: this.lanesY[this.currentLane],
-            bounceAngle: i * 0.4
+            targetY: this.lanesY[this.currentLane],
+            bounceOffset: i * 0.5
           });
         }
       }
@@ -226,9 +350,24 @@
       }
 
       updateHud() {
-        this.squadCountHud.textContent = `Nhân lực: ${this.squadCount}`;
-        this.squadPeakHud.textContent = `Cao nhất: ${this.peakSquadCount}`;
-        this.squadTotalHud.textContent = `Đã tuyển: ${this.totalRecruited}`;
+        this.squadCountHud.textContent = `👥 Quân số: ${this.squadCount}`;
+        this.squadPeakHud.textContent = `⭐ Kỷ lục: ${this.peakSquadCount}`;
+        this.squadTotalHud.textContent = `🎯 Đã tuyển: ${this.totalRecruited}`;
+
+        // Cập nhật danh hiệu quy mô
+        if (this.squadCount >= 20) {
+          this.rankIcon.textContent = '👑';
+          this.rankTitle.textContent = 'Đại Gia Đình Toàn Năng';
+        } else if (this.squadCount >= 15) {
+          this.rankIcon.textContent = '🥇';
+          this.rankTitle.textContent = 'Binh Đoàn Y Tế';
+        } else if (this.squadCount >= 10) {
+          this.rankIcon.textContent = '🥈';
+          this.rankTitle.textContent = 'Biệt Đội Xung Kích';
+        } else {
+          this.rankIcon.textContent = '🥉';
+          this.rankTitle.textContent = 'Đội Tiên Phong';
+        }
       }
 
       loop() {
@@ -239,207 +378,547 @@
       }
 
       update() {
-        this.speed += 0.0008;
+        this.speed = this.baseSpeed + Math.min(3.5, this.totalRecruited * 0.12);
+        this.roadOffset = (this.roadOffset + this.speed) % 80;
+        this.runCycle += 0.25;
 
-        const targetY = this.lanesY[this.targetLane];
-        this.members.forEach((m) => {
-          m.laneY += (targetY - m.laneY) * 0.22;
-          m.bounceAngle += 0.35;
+        // Cập nhật vị trí các thành viên trong đoàn
+        const leaderTargetY = this.lanesY[this.targetLane];
+        this.members.forEach((m, idx) => {
+          // Thành viên sau theo chân thành viên trước với độ trễ mượt
+          const followY = idx === 0 ? leaderTargetY : this.members[idx - 1].laneY;
+          m.laneY += (followY - m.laneY) * 0.24;
+          m.bounceOffset += 0.35;
         });
 
-        // Sinh vật phẩm hoặc ứng viên
+        // Cập nhật Buff timers
+        if (this.magnetTimer > 0) {
+          this.magnetTimer -= 0.016;
+          if (this.magnetTimer <= 0) {
+            this.buffMagnetTag.style.display = 'none';
+          } else {
+            this.buffMagnetTag.style.display = 'flex';
+            this.magnetTime.textContent = `${Math.ceil(this.magnetTimer)}s`;
+          }
+        }
+
+        if (this.shieldTimer > 0) {
+          this.shieldTimer -= 0.016;
+          if (this.shieldTimer <= 0) {
+            this.buffShieldTag.style.display = 'none';
+          } else {
+            this.buffShieldTag.style.display = 'flex';
+            this.shieldTime.textContent = `${Math.ceil(this.shieldTimer)}s`;
+          }
+        }
+
+        // Sinh vật phẩm & Ứng viên
         this.spawnTimer--;
         if (this.spawnTimer <= 0) {
           const lane = Math.floor(Math.random() * 3);
-          const isCandidate = Math.random() > 0.45;
+          const roll = Math.random();
 
-          this.items.push({
-            lane: lane,
-            x: this.canvas.width + 40,
-            y: this.lanesY[lane],
-            type: isCandidate ? 'candidate' : 'obstacle'
-          });
+          if (roll < 0.52) {
+            // Ứng viên (Sinh viên Y khoa, Bác sĩ trẻ, Tân binh)
+            const candTypes = ['student', 'doctor', 'volunteer'];
+            this.items.push({
+              lane: lane,
+              x: this.canvas.width + 40,
+              y: this.lanesY[lane],
+              type: 'candidate',
+              candType: candTypes[Math.floor(Math.random() * candTypes.length)],
+              w: 32,
+              h: 46
+            });
+          } else if (roll < 0.64) {
+            // 📢 Loa Phát Thanh Tuyển Sinh (Megaphone)
+            this.items.push({
+              lane: lane,
+              x: this.canvas.width + 40,
+              y: this.lanesY[lane],
+              type: 'megaphone',
+              w: 34,
+              h: 34
+            });
+          } else if (roll < 0.76) {
+            // 🧋 Trà Sữa Tiếp Sức (Shield)
+            this.items.push({
+              lane: lane,
+              x: this.canvas.width + 40,
+              y: this.lanesY[lane],
+              type: 'milktea',
+              w: 30,
+              h: 36
+            });
+          } else if (roll < 0.82) {
+            // 📋 Hồ Sơ Vàng Tuyển Dụng (+2)
+            this.items.push({
+              lane: lane,
+              x: this.canvas.width + 40,
+              y: this.lanesY[lane],
+              type: 'golden-form',
+              w: 30,
+              h: 38
+            });
+          } else {
+            // Chướng ngại vật (Deadline thi cử, Vũng nước, Rào chắn)
+            const obsTypes = ['deadline', 'puddle', 'barricade'];
+            this.items.push({
+              lane: lane,
+              x: this.canvas.width + 40,
+              y: this.lanesY[lane],
+              type: 'obstacle',
+              obsType: obsTypes[Math.floor(Math.random() * obsTypes.length)],
+              w: 36,
+              h: 40
+            });
+          }
 
-          this.spawnTimer = Math.floor(52 + Math.random() * 45);
+          this.spawnTimer = Math.floor(48 + Math.random() * 40 - Math.min(18, this.speed * 2));
         }
 
-        const leaderX = 140;
+        const leaderX = 145;
+        const leaderY = this.members[0].laneY;
 
-        // Xử lý va chạm
+        // Xử lý di chuyển & Va chạm
         for (let i = this.items.length - 1; i >= 0; i--) {
           const it = this.items[i];
           it.x -= this.speed;
 
-          const inSameLane = Math.abs(this.members[0].laneY - it.y) < 36;
+          // Hiệu ứng LOA PHÁT THANH HÚT ỨNG VIÊN 3 LÀN
+          if (this.magnetTimer > 0 && it.type === 'candidate' && it.x > leaderX) {
+            it.y += (leaderY - it.y) * 0.08;
+            it.x -= 2.5; // Kéo nhanh về phía trước
+          }
 
-          if (inSameLane && Math.abs(leaderX - it.x) < 34) {
+          // Kiểm tra va chạm với người dẫn đầu hoặc đội ngũ
+          const inHitZone = Math.abs(leaderX - it.x) < 36 && Math.abs(leaderY - it.y) < 42;
+
+          if (inHitZone) {
             if (it.type === 'candidate') {
-              // Thu nhận tân binh (+1 nhân lực)
+              // Chiêu mộ thành công
               window.sound.playRecruit();
               this.squadCount++;
               this.totalRecruited++;
               if (this.squadCount > this.peakSquadCount) {
                 this.peakSquadCount = this.squadCount;
               }
-              this.members.push({
-                offsetX: -(this.members.length * 26),
-                laneY: this.members[0].laneY,
-                bounceAngle: 0
-              });
-              this.updateHud();
-            } else {
-              // Va chạm vật cản (-1 hoặc -2 nhân lực)
-              window.sound.playHit();
-              const loseCount = Math.min(this.squadCount, 1 + (Math.random() > 0.5 ? 1 : 0));
-              this.squadCount -= loseCount;
-              this.members.splice(-loseCount);
-              this.updateHud();
 
-              if (this.squadCount <= 0) {
-                this.gameOver();
-                return;
+              this.members.push({
+                offsetX: -(this.members.length * 28),
+                laneY: this.members[this.members.length - 1].laneY,
+                bounceOffset: 0
+              });
+
+              this.addFloatingText(it.x, it.y - 20, "+1 TÂN BINH!", "#06d6a0");
+              this.updateHud();
+              this.items.splice(i, 1);
+            } else if (it.type === 'megaphone') {
+              // Kích hoạt Loa Phát Thanh
+              window.sound.playPowerup();
+              this.magnetTimer = 8;
+              this.addFloatingText(it.x, it.y - 20, "📢 HÚT TÂN BINH 3 LÀN!", "#ffd166");
+              this.items.splice(i, 1);
+            } else if (it.type === 'milktea') {
+              // Kích hoạt Khiên Trà Sữa Bất Tử
+              window.sound.playPowerup();
+              this.shieldTimer = 6;
+              this.addFloatingText(it.x, it.y - 20, "🧋 KHIÊN BẤT TỬ 6S!", "#ff8c38");
+              this.items.splice(i, 1);
+            } else if (it.type === 'golden-form') {
+              // Hồ sơ vàng +2 quân số
+              window.sound.playWin();
+              this.squadCount += 2;
+              this.totalRecruited += 2;
+              if (this.squadCount > this.peakSquadCount) {
+                this.peakSquadCount = this.squadCount;
+              }
+              for (let k = 0; k < 2; k++) {
+                this.members.push({
+                  offsetX: -(this.members.length * 28),
+                  laneY: this.members[this.members.length - 1].laneY,
+                  bounceOffset: 0
+                });
+              }
+              this.addFloatingText(it.x, it.y - 20, "+2 HỒ SƠ VÀNG! 📋", "#ffd166");
+              this.updateHud();
+              this.items.splice(i, 1);
+            } else if (it.type === 'obstacle') {
+              // Nếu đang có KHIÊN BẤT TỬ -> Húc bay chướng ngại vật!
+              if (this.shieldTimer > 0) {
+                window.sound.playHit();
+                this.addFloatingText(it.x, it.y - 20, "🛡️ ĐÃ HÚC BAY VẬT CẢN!", "#06d6a0");
+                this.items.splice(i, 1);
+              } else {
+                // Mất thành viên
+                window.sound.playHit();
+                const loseCount = Math.min(this.squadCount, 1 + (Math.random() > 0.6 ? 1 : 0));
+                this.squadCount -= loseCount;
+                this.members.splice(-loseCount);
+                this.addFloatingText(it.x, it.y - 20, `-${loseCount} NHÂN SỰ!`, "#e63946");
+                this.updateHud();
+                this.items.splice(i, 1);
+
+                if (this.squadCount <= 0) {
+                  this.gameOver();
+                  return;
+                }
               }
             }
-            this.items.splice(i, 1);
-            continue;
           }
 
           if (it.x < -60) {
             this.items.splice(i, 1);
           }
         }
+
+        // Cập nhật chữ bay & hạt
+        for (let i = this.floatingTexts.length - 1; i >= 0; i--) {
+          const ft = this.floatingTexts[i];
+          ft.y += ft.vy;
+          ft.alpha -= 0.018;
+          if (ft.alpha <= 0) this.floatingTexts.splice(i, 1);
+        }
+      }
+
+      addFloatingText(x, y, text, color = '#ffd166') {
+        this.floatingTexts.push({
+          x: x,
+          y: y,
+          text: text,
+          color: color,
+          alpha: 1.0,
+          vy: -1.4
+        });
       }
 
       draw() {
         const w = this.canvas.width;
         const h = this.canvas.height;
-        this.ctx.clearRect(0, 0, w, h);
+        const ctx = this.ctx;
+        ctx.clearRect(0, 0, w, h);
 
-        // Nền đường 3 làn
-        this.ctx.fillStyle = '#fff9f7';
-        this.ctx.fillRect(0, 0, w, h);
+        // 1. Nền khuôn viên trường / thành phố
+        const bgGrad = ctx.createLinearGradient(0, 0, 0, h);
+        bgGrad.addColorStop(0, '#1d3557');
+        bgGrad.addColorStop(0.35, '#2a4365');
+        bgGrad.addColorStop(1, '#1e293b');
+        ctx.fillStyle = bgGrad;
+        ctx.fillRect(0, 0, w, h);
 
-        this.lanesY.forEach((ly, idx) => {
-          this.ctx.fillStyle = idx % 2 === 0 ? 'rgba(255, 235, 225, 0.45)' : 'rgba(255, 245, 240, 0.45)';
-          this.ctx.fillRect(0, ly - 40, w, 80);
+        // Hàng cây & tòa nhà xa xa
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
+        for (let i = 0; i < 7; i++) {
+          ctx.fillRect(i * 130 - (this.roadOffset * 0.3), 10, 80, 24);
+        }
 
-          this.ctx.strokeStyle = '#ffd6cc';
-          this.ctx.lineWidth = 2;
-          this.ctx.setLineDash([16, 16]);
-          this.ctx.beginPath();
-          this.ctx.moveTo(0, ly + 40);
-          this.ctx.lineTo(w, ly + 40);
-          this.ctx.stroke();
-          this.ctx.setLineDash([]);
+        // 2. 3 Làn đường chạy rực rỡ
+        const laneH = 95;
+        for (let i = 0; i < 3; i++) {
+          const ly = 40 + i * laneH;
+          // Mặt đường làn
+          ctx.fillStyle = i % 2 === 0 ? '#334155' : '#3f4e65';
+          ctx.fillRect(0, ly, w, laneH);
+
+          // Vạch kẻ đứt phân làn màu trắng
+          if (i < 2) {
+            ctx.fillStyle = '#f8fafc';
+            for (let x = -this.roadOffset; x < w; x += 60) {
+              ctx.fillRect(x, ly + laneH - 2, 35, 4);
+            }
+          }
+        }
+
+        // Vạch lề đường vàng rực
+        ctx.fillStyle = '#ffb703';
+        ctx.fillRect(0, 38, w, 4);
+        ctx.fillRect(0, 325, w, 4);
+
+        // 3. Hiệu ứng sóng âm lan tỏa của Loa Phát Thanh (khi kích hoạt)
+        if (this.magnetTimer > 0) {
+          const leaderX = 145;
+          const leaderY = this.members[0].laneY;
+          ctx.save();
+          ctx.strokeStyle = 'rgba(255, 183, 3, 0.45)';
+          ctx.lineWidth = 3;
+          for (let r = 30; r <= 140; r += 35) {
+            const waveR = (r + (this.runCycle * 10)) % 150;
+            ctx.beginPath();
+            ctx.arc(leaderX, leaderY, waveR, -Math.PI * 0.4, Math.PI * 0.4);
+            ctx.stroke();
+          }
+          ctx.restore();
+        }
+
+        // 4. Vẽ các vật phẩm & Ứng viên trên đường
+        this.items.forEach(it => this.drawItem(it));
+
+        // 5. Vẽ đoàn quân áo đỏ chi tiết
+        this.drawSquadTeam();
+
+        // 6. Chữ bay thông báo
+        this.floatingTexts.forEach(ft => {
+          ctx.save();
+          ctx.globalAlpha = Math.max(0, ft.alpha);
+          ctx.fillStyle = ft.color;
+          ctx.font = 'bold 15px Outfit, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
+          ctx.shadowBlur = 5;
+          ctx.fillText(ft.text, ft.x, ft.y);
+          ctx.restore();
         });
+      }
 
-        // Vẽ items
-        this.items.forEach(it => {
-          if (it.type === 'candidate') {
-            this.drawCandidate(it.x, it.y);
+      drawItem(it) {
+        const ctx = this.ctx;
+        ctx.save();
+        ctx.translate(it.x, it.y);
+
+        if (it.type === 'candidate') {
+          // Ứng viên vẫy tay gọi
+          this.drawCandidateCharacter(it.candType);
+        } else if (it.type === 'megaphone') {
+          // 📢 LOA PHÁT THANH
+          ctx.fillStyle = '#ffb703';
+          ctx.beginPath();
+          ctx.moveTo(-10, -8);
+          ctx.lineTo(12, -16);
+          ctx.lineTo(12, 16);
+          ctx.lineTo(-10, 8);
+          ctx.closePath();
+          ctx.fill();
+          ctx.fillStyle = '#e63946';
+          ctx.fillRect(-14, -6, 6, 12);
+          // Tay cầm
+          ctx.fillStyle = '#2b2d42';
+          ctx.fillRect(-8, 6, 4, 10);
+        } else if (it.type === 'milktea') {
+          // 🧋 LY TRÀ SỮA TIẾP SỨC
+          ctx.fillStyle = '#ffe5d9';
+          ctx.beginPath();
+          ctx.roundRect(-10, -14, 20, 26, 4);
+          ctx.fill();
+          ctx.strokeStyle = '#ff8c38';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+          // Trân châu
+          ctx.fillStyle = '#2b2d42';
+          for (let b = -6; b <= 6; b += 4) {
+            ctx.beginPath();
+            ctx.arc(b, 6, 2.5, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          // Ống hút đỏ
+          ctx.strokeStyle = '#e63946';
+          ctx.lineWidth = 3;
+          ctx.beginPath();
+          ctx.moveTo(2, -14);
+          ctx.lineTo(6, -24);
+          ctx.stroke();
+        } else if (it.type === 'golden-form') {
+          // 📋 HỒ SƠ APPLY VÀNG
+          ctx.fillStyle = '#ffd166';
+          ctx.strokeStyle = '#ffb703';
+          ctx.lineWidth = 2.5;
+          ctx.beginPath();
+          ctx.roundRect(-10, -14, 20, 28, 4);
+          ctx.fill();
+          ctx.stroke();
+          // Kẹp đỏ
+          ctx.fillStyle = '#e63946';
+          ctx.fillRect(-6, -16, 12, 4);
+          // Dòng chữ
+          ctx.fillStyle = '#2b2d42';
+          ctx.fillRect(-6, -6, 12, 2);
+          ctx.fillRect(-6, -1, 12, 2);
+          ctx.fillRect(-6, 4, 8, 2);
+        } else if (it.type === 'obstacle') {
+          // CHƯỚNG NGẠI VẬT
+          if (it.obsType === 'deadline') {
+            // Đồng hồ deadline
+            ctx.fillStyle = '#c1121f';
+            ctx.beginPath();
+            ctx.arc(0, 0, 16, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#ffd166';
+            ctx.lineWidth = 2.5;
+            ctx.stroke();
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 10px Outfit, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('THI', 0, 4);
+          } else if (it.obsType === 'puddle') {
+            // Vũng nước mưa
+            ctx.fillStyle = '#38bdf8';
+            ctx.beginPath();
+            ctx.ellipse(0, 6, 20, 8, 0, 0, Math.PI * 2);
+            ctx.fill();
           } else {
-            // Chướng ngại vật
-            this.ctx.fillStyle = '#c1121f';
-            this.ctx.beginPath();
-            this.ctx.roundRect(it.x - 14, it.y - 18, 28, 36, 6);
-            this.ctx.fill();
-            this.ctx.fillStyle = 'white';
-            this.ctx.font = 'bold 12px sans-serif';
-            this.ctx.textAlign = 'center';
-            this.ctx.fillText('⚠️', it.x, it.y + 4);
-          }
-        });
-
-        // Vẽ các thành viên đoàn áo đỏ
-        const baseX = 140;
-        this.members.forEach((m, idx) => {
-          this.drawVolunteer(baseX + m.offsetX, m.laneY, m.bounceAngle, idx === 0);
-        });
-      }
-
-      drawCandidate(x, y) {
-        this.ctx.save();
-        if (this.candidateSprite) {
-          this.ctx.drawImage(this.candidateSprite, x - 22, y - 36, 44, 48);
-          this.ctx.font = '12px sans-serif';
-          this.ctx.textAlign = 'center';
-          this.ctx.fillText('🙋', x, y - 42);
-        } else {
-          // Procedural
-          this.ctx.fillStyle = '#118ab2';
-          this.ctx.beginPath();
-          this.ctx.roundRect(x - 10, y - 16, 20, 24, 4);
-          this.ctx.fill();
-
-          this.ctx.fillStyle = '#ffdfba';
-          this.ctx.beginPath();
-          this.ctx.arc(x, y - 24, 8, 0, Math.PI * 2);
-          this.ctx.fill();
-
-          this.ctx.font = '12px sans-serif';
-          this.ctx.textAlign = 'center';
-          this.ctx.fillText('🙋', x, y - 34);
-        }
-        this.ctx.restore();
-      }
-
-      drawVolunteer(x, y, bounceAngle, isLeader = false) {
-        this.ctx.save();
-
-        // Bóng đổ
-        this.ctx.fillStyle = "rgba(0,0,0,0.1)";
-        this.ctx.beginPath();
-        this.ctx.ellipse(x, y + 16, 12, 4, 0, 0, Math.PI * 2);
-        this.ctx.fill();
-
-        const bounce = Math.sin(bounceAngle) * 3;
-
-        if (this.volunteerSprite) {
-          this.ctx.drawImage(this.volunteerSprite, x - 22, y - 34 + bounce, 44, 48);
-          if (isLeader) {
-            this.ctx.font = '12px sans-serif';
-            this.ctx.textAlign = 'center';
-            this.ctx.fillText('⭐', x, y - 42 + bounce);
-          }
-        } else {
-          // Procedural
-          const swing = Math.sin(bounceAngle) * 8;
-          this.ctx.strokeStyle = '#2b2d42';
-          this.ctx.lineWidth = 3;
-          this.ctx.beginPath();
-          this.ctx.moveTo(x - 4, y + 6);
-          this.ctx.lineTo(x - 4 - swing, y + 16);
-          this.ctx.moveTo(x + 4, y + 6);
-          this.ctx.lineTo(x + 4 + swing, y + 16);
-          this.ctx.stroke();
-
-          this.ctx.fillStyle = isLeader ? '#c1121f' : '#e63946';
-          this.ctx.beginPath();
-          this.ctx.roundRect(x - 11, y - 16, 22, 24, 5);
-          this.ctx.fill();
-
-          this.ctx.fillStyle = '#ffffff';
-          this.ctx.fillRect(x - 2, y - 12, 4, 12);
-          this.ctx.fillRect(x - 6, y - 8, 12, 4);
-
-          this.ctx.fillStyle = '#ffdfba';
-          this.ctx.beginPath();
-          this.ctx.arc(x, y - 24, 8, 0, Math.PI * 2);
-          this.ctx.fill();
-
-          this.ctx.fillStyle = '#c1121f';
-          this.ctx.beginPath();
-          this.ctx.arc(x, y - 27, 8, Math.PI, Math.PI * 2);
-          this.ctx.fill();
-
-          if (isLeader) {
-            this.ctx.font = '11px sans-serif';
-            this.ctx.textAlign = 'center';
-            this.ctx.fillText('⭐', x, y - 36);
+            // Rào chắn sọc cam trắng
+            ctx.fillStyle = '#ff8c38';
+            ctx.fillRect(-16, -12, 32, 18);
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(-10, -12, 6, 18);
+            ctx.fillRect(4, -12, 6, 18);
+            ctx.fillStyle = '#2b2d42';
+            ctx.fillRect(-14, 6, 4, 10);
+            ctx.fillRect(10, 6, 4, 10);
           }
         }
 
-        this.ctx.restore();
+        ctx.restore();
+      }
+
+      drawCandidateCharacter(candType) {
+        const ctx = this.ctx;
+        // Chân
+        ctx.strokeStyle = '#2b2d42';
+        ctx.lineWidth = 3.5;
+        ctx.beginPath();
+        ctx.moveTo(-4, 4);
+        ctx.lineTo(-4, 18);
+        ctx.moveTo(4, 4);
+        ctx.lineTo(4, 18);
+        ctx.stroke();
+
+        // Thân áo
+        if (candType === 'doctor') {
+          // Áo blouse trắng
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath();
+          ctx.roundRect(-8, -12, 16, 18, 3);
+          ctx.fill();
+          // Ống nghe xanh
+          ctx.strokeStyle = '#0284c7';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.arc(0, -6, 6, 0, Math.PI);
+          ctx.stroke();
+        } else {
+          // Áo sơ mi sinh viên vàng/xanh
+          ctx.fillStyle = '#fde047';
+          ctx.beginPath();
+          ctx.roundRect(-8, -12, 16, 18, 3);
+          ctx.fill();
+        }
+
+        // Đầu & Tóc
+        ctx.fillStyle = '#ffe0bd';
+        ctx.beginPath();
+        ctx.arc(0, -20, 8, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#2b2d42';
+        ctx.beginPath();
+        ctx.arc(0, -22, 8.5, Math.PI, Math.PI * 2);
+        ctx.fill();
+
+        // Tay vẫy chào
+        ctx.strokeStyle = '#ffe0bd';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(6, -8);
+        ctx.lineTo(14, -20);
+        ctx.stroke();
+      }
+
+      drawSquadTeam() {
+        const ctx = this.ctx;
+        const leaderX = 145;
+
+        // Vẽ từng thành viên trong đoàn từ người cuối cùng tới người đầu đàn
+        for (let i = this.members.length - 1; i >= 0; i--) {
+          const m = this.members[i];
+          const mx = leaderX + m.offsetX;
+          const my = m.laneY;
+          const isLeader = (i === 0);
+
+          ctx.save();
+          ctx.translate(mx, my);
+
+          // Nhún nhảy theo nhịp chạy
+          const stepBounce = Math.abs(Math.sin(this.runCycle + m.bounceOffset)) * 3.5;
+
+          // Chân bước chạy
+          const legSwing = Math.sin(this.runCycle + m.bounceOffset) * 6;
+          ctx.strokeStyle = '#2b2d42';
+          ctx.lineWidth = 3.5;
+          ctx.lineCap = 'round';
+          ctx.beginPath();
+          ctx.moveTo(-4, 4 - stepBounce);
+          ctx.lineTo(-4 - legSwing, 18);
+          ctx.moveTo(4, 4 - stepBounce);
+          ctx.lineTo(4 + legSwing, 18);
+          ctx.stroke();
+
+          // Thân áo đỏ tình nguyện
+          ctx.fillStyle = '#e63946';
+          ctx.beginPath();
+          ctx.roundRect(-9, -14 - stepBounce, 18, 20, 4);
+          ctx.fill();
+
+          // Chữ thập trắng
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(-2, -10 - stepBounce, 4, 10);
+          ctx.fillRect(-5, -7 - stepBounce, 10, 4);
+
+          // Đầu anime
+          ctx.fillStyle = '#ffe0bd';
+          ctx.beginPath();
+          ctx.arc(0, -22 - stepBounce, 8.5, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Nón đỏ đồng phục
+          ctx.fillStyle = '#c1121f';
+          ctx.beginPath();
+          ctx.arc(0, -24 - stepBounce, 9, Math.PI, Math.PI * 2);
+          ctx.fill();
+          ctx.fillRect(-4, -25 - stepBounce, 15, 3); // Vành nón
+
+          // Người dẫn đầu cầm cờ CLB bay phấp phới
+          if (isLeader) {
+            ctx.strokeStyle = '#ffd166';
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            ctx.moveTo(6, 4 - stepBounce);
+            ctx.lineTo(6, -44 - stepBounce);
+            ctx.stroke();
+
+            // Lá cờ đỏ
+            const flagWave = Math.sin(this.runCycle * 2) * 3;
+            ctx.fillStyle = '#e63946';
+            ctx.beginPath();
+            ctx.moveTo(6, -44 - stepBounce);
+            ctx.lineTo(-14, -38 - stepBounce + flagWave);
+            ctx.lineTo(6, -32 - stepBounce);
+            ctx.closePath();
+            ctx.fill();
+
+            // Sao vàng trên cờ
+            ctx.fillStyle = '#ffd166';
+            ctx.beginPath();
+            ctx.arc(-2, -38 - stepBounce + flagWave * 0.5, 2.5, 0, Math.PI * 2);
+            ctx.fill();
+          }
+
+          ctx.restore();
+        }
+
+        // Khiên bất tử bao bọc cả đoàn (nếu có)
+        if (this.shieldTimer > 0) {
+          const leaderY = this.members[0].laneY;
+          const tailX = leaderX - (this.members.length * 28);
+          ctx.save();
+          ctx.strokeStyle = 'rgba(6, 214, 160, 0.85)';
+          ctx.lineWidth = 3.5;
+          ctx.fillStyle = 'rgba(6, 214, 160, 0.18)';
+          ctx.beginPath();
+          ctx.roundRect(tailX - 20, leaderY - 45, (leaderX - tailX) + 40, 75, 20);
+          ctx.fill();
+          ctx.stroke();
+          ctx.restore();
+        }
       }
 
       gameOver() {
@@ -448,16 +927,27 @@
 
         setTimeout(() => {
           const modal = document.getElementById('game-modal');
+          const modalIcon = document.getElementById('modal-icon');
+          const modalTitle = document.getElementById('modal-title');
+          const modalDesc = document.getElementById('modal-desc');
           const modalStat = document.getElementById('modal-stat-box');
+
+          modalIcon.textContent = '🤝';
+          modalTitle.textContent = 'Tổng Kết Chiến Dịch Chiêu Mộ';
+          modalDesc.textContent = 'Bạn đã dẫn dắt đội ngũ áo đỏ rất kiên cường và gắn kết!';
+
           modalStat.innerHTML = `
-            <div>Tổng số nhân lực kiếm được: <strong>${this.totalRecruited}</strong></div>
-            <div>Số nhân lực nhiều nhất trong 1 thời điểm: <strong>${this.peakSquadCount}</strong></div>
+            <div>Tổng số tân binh đã tuyển: <strong>${this.totalRecruited} người</strong></div>
+            <div>Quy mô đội ngũ lớn nhất: <strong>${this.peakSquadCount} thành viên</strong></div>
+            <div>Danh hiệu đạt được: <strong>${this.rankTitle.textContent} ${this.rankIcon.textContent}</strong></div>
+            <div style="margin-top:6px; color:#e63946; font-weight:700;">Đại gia đình CLB Tình Nguyện Trường Y luôn chào đón bạn!</div>
           `;
           modal.classList.add('active');
         }, 350);
       }
     }
 
+    // Khởi động game
     window.addEventListener('DOMContentLoaded', () => {
       const game = new SquadGameApp();
       game.init();

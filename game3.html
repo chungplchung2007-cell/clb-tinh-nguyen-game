@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Game 3: Đào Vàng Gây Quỹ - Ban Tài Chính</title>
-  <meta name="description" content="Mini-game đào vàng gây quỹ tình nguyện của Ban Tài Chính - CLB Tình Nguyện Trường Y." />
+  <meta name="description" content="Chiến dịch đào vàng gây quỹ từ thiện tình nguyện của Ban Tài Chính - CLB Tình Nguyện Trường Y: Kim cương, Hòm thuốc cứu trợ, Thuốc nổ Dynamite & Quỹ tài trợ khủng!" />
 
   <!-- Google Fonts: Be Vietnam Pro & Outfit -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -12,6 +12,113 @@
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet" />
 
   <link rel="stylesheet" href="css/style.css" />
+
+  <style>
+    /* ==========================================================================
+       TINH CHỈNH ĐỒ HỌA SẮC NÉT & HUD CHO GAME 3 BAN TÀI CHÍNH
+       ========================================================================== */
+    .campaign-banner {
+      background: linear-gradient(135deg, rgba(230, 57, 70, 0.95), rgba(255, 140, 56, 0.95));
+      color: white;
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 700;
+      box-shadow: var(--shadow-sm);
+      border: 1.5px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .campaign-desc {
+      font-size: 12px;
+      font-weight: 500;
+      opacity: 0.95;
+    }
+
+    .canvas-wrapper {
+      position: relative;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+      background: #4a2810;
+      border: 2px solid var(--border-color);
+    }
+
+    /* Floating Item Details */
+    .miner-buff-tag {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(6px);
+      border: 1.5px solid var(--border-color);
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: var(--shadow-sm);
+      z-index: 10;
+    }
+
+    .miner-dynamite-tag {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(6px);
+      border: 1.5px solid #ffb703;
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      font-size: 12px;
+      font-weight: 800;
+      color: #c1121f;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: var(--shadow-sm);
+      z-index: 10;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .miner-dynamite-tag:hover {
+      transform: scale(1.05);
+      background: #fff0eb;
+    }
+
+    /* Nút điều khiển đôi */
+    .controls-dual-grid {
+      display: grid;
+      grid-template-columns: 2fr 1.2fr;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .btn-dynamite {
+      background: linear-gradient(135deg, #c1121f, #e63946) !important;
+      color: white !important;
+      border: 2px solid #ffd166 !important;
+      font-weight: 800 !important;
+      box-shadow: 0 4px 15px rgba(193, 18, 31, 0.4) !important;
+    }
+
+    .btn-dynamite:active {
+      transform: scale(0.96);
+    }
+
+    @media (max-width: 600px) {
+      .controls-dual-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 <body>
 
@@ -22,7 +129,7 @@
         <div class="club-logo-badge">❤</div>
         <div class="club-title-wrap">
           <h1 id="brand-name">CLB TÌNH NGUYỆN TRƯỜNG Y</h1>
-          <p>Ban Tài chính</p>
+          <p>Ban Tài chính • Gây Quỹ Thiện Nguyện</p>
         </div>
       </a>
 
@@ -38,23 +145,41 @@
 
     <!-- Game Arena -->
     <main class="game-arena">
+      <!-- Banner Chiến dịch gây quỹ -->
+      <div class="campaign-banner" id="campaign-banner">
+        <div id="campaign-title">🏥 CHIẾN DỊCH 1: GÂY QUỸ TỦ THUỐC VÙNG CAO</div>
+        <div class="campaign-desc" id="campaign-desc">Thu gom kinh phí mua 50 tủ thuốc y tế bản xa!</div>
+      </div>
+
       <div class="game-hud">
-        <div class="hud-title">💰 Đào Vàng Gây Quỹ Tình Nguyện</div>
+        <div class="hud-title">💰 Quỹ Thiện Nguyện</div>
         <div class="hud-stats">
           <span class="hud-pill" id="miner-level-hud">Màn 1</span>
-          <span class="hud-pill" id="miner-gold-hud">Vàng: $0 / $650</span>
+          <span class="hud-pill" id="miner-gold-hud">Quỹ: $0 / $750</span>
           <span class="hud-pill" id="miner-time-hud">⏱ 60s</span>
         </div>
       </div>
 
+      <!-- Canvas Khung Đào Vàng Siêu Nét -->
       <div class="canvas-wrapper">
-        <canvas id="canvas-miner" width="800" height="460"></canvas>
+        <canvas id="canvas-miner" width="800" height="480"></canvas>
+        
+        <div class="miner-dynamite-tag" id="hud-dynamite-btn" title="Bấm phím W hoặc click vào đây để nổ đá khi lỡ câu trúng!">
+          <span>🧨 Thuốc nổ:</span> <strong id="dynamite-count">x2</strong>
+        </div>
+
+        <div class="miner-buff-tag" id="hud-buff-tag" style="display: none;">
+          <span>⚡ TĂNG TỐC KÉO</span> <span id="buff-time">5s</span>
+        </div>
       </div>
 
-      <!-- Nút thả móc di động -->
-      <div class="mobile-controls-row">
+      <!-- Nút điều khiển -->
+      <div class="controls-dual-grid">
         <button id="btn-miner-drop" class="btn-mobile-ctrl">
-          <span>⚡ PHÓNG MÓC CÂU (CLICK / SPACE)</span>
+          <span>⚡ PHÓNG MÓC (SPACE / CHẠM)</span>
+        </button>
+        <button id="btn-miner-dynamite" class="btn-mobile-ctrl btn-dynamite">
+          <span>🧨 NỔ ĐÁ (PHÍM W / LÊN)</span>
         </button>
       </div>
 
@@ -84,9 +209,13 @@
   <!-- Scripts -->
   <script src="js/config.js"></script>
   <script src="js/audio.js"></script>
-  <script src="js/bg-remover.js"></script>
 
   <script>
+    /**
+     * ========================================================================
+     * NÂNG CẤP GAME ĐÀO VÀNG BAN TÀI CHÍNH: HI-DPI SẮC NÉT & TÌNH TIẾT HẤP DẪN
+     * ========================================================================
+     */
     class MinerGameApp {
       constructor() {
         this.canvas = document.getElementById('canvas-miner');
@@ -94,38 +223,85 @@
         this.levelHud = document.getElementById('miner-level-hud');
         this.goldHud = document.getElementById('miner-gold-hud');
         this.timeHud = document.getElementById('miner-time-hud');
+        this.campaignTitle = document.getElementById('campaign-title');
+        this.campaignDesc = document.getElementById('campaign-desc');
+        this.dynamiteHudCount = document.getElementById('dynamite-count');
+        this.buffTag = document.getElementById('hud-buff-tag');
+        this.buffTime = document.getElementById('buff-time');
 
         this.animId = null;
         this.timerId = null;
         this.isRunning = false;
 
+        // Cấu hình 4 Chiến dịch gây quỹ hấp dẫn
+        this.campaigns = [
+          {
+            level: 1,
+            target: 750,
+            time: 60,
+            title: "🏥 CHIẾN DỊCH 1: GÂY QUỸ TỦ THUỐC VÙNG CAO",
+            desc: "Thu gom kinh phí mua 50 tủ thuốc y tế cho bà con bản xa!"
+          },
+          {
+            level: 2,
+            target: 1600,
+            time: 60,
+            title: "🎓 CHIẾN DỊCH 2: HỌC BỔNG CHO EM ĐẾN TRƯỜNG",
+            desc: "Vận động tài trợ trao 100 suất học bổng cho học sinh nghèo vượt khó!"
+          },
+          {
+            level: 3,
+            target: 2700,
+            time: 55,
+            title: "🩺 CHIẾN DỊCH 3: XE KHÁM BỆNH & SIÊU ÂM LƯU ĐỘNG",
+            desc: "Trang bị máy siêu âm và thuốc men thiết yếu cho buôn làng!"
+          },
+          {
+            level: 4,
+            target: 4000,
+            time: 50,
+            title: "🏆 CHIẾN DỊCH 4: XÂY DỰNG TRẠM Y TẾ KIÊN CỐ",
+            desc: "Đạt đỉnh cao gây quỹ xây dựng trạm y tế vững chãi ngàn đời!"
+          }
+        ];
+
         this.currentLevelIdx = 0;
         this.currentGold = 0;
         this.timeLeft = 60;
+        this.dynamiteCount = 2;
 
-        // Sprite thợ mỏ áo đỏ đã tách nền
-        this.minerSprite = null;
+        // Buff kéo nhanh
+        this.speedBuffTimer = 0;
 
-        this.origin = { x: 400, y: 72 };
+        // Vị trí gốc tời
+        this.origin = { x: 400, y: 76 };
         this.hook = {
           angle: 0,
-          angleSpeed: 0.035,
+          angleSpeed: 0.032,
           angleDir: 1,
-          baseLength: 48,
-          currentLength: 48,
-          maxLength: 420,
+          baseLength: 52,
+          currentLength: 52,
+          maxLength: 440,
           state: 'swing', // 'swing' | 'shoot' | 'rewind'
           caughtItem: null,
-          speed: 9.5
+          speed: 10.5
         };
 
         this.items = [];
+        this.particles = [];
+        this.floatingTexts = [];
 
-        // Lắng nghe phóng móc
+        this.initEvents();
+      }
+
+      initEvents() {
         window.addEventListener('keydown', (e) => {
           if (e.code === 'Space' || e.key === 'ArrowDown') {
             e.preventDefault();
             this.dropHook();
+          } else if (e.code === 'KeyW' || e.key === 'ArrowUp') {
+            e.preventDefault();
+            this.useDynamite();
           }
         });
 
@@ -138,23 +314,33 @@
           e.preventDefault();
           this.dropHook();
         });
+
+        document.getElementById('btn-miner-dynamite').addEventListener('pointerdown', (e) => {
+          e.preventDefault();
+          this.useDynamite();
+        });
+
+        document.getElementById('hud-dynamite-btn').addEventListener('click', (e) => {
+          e.stopPropagation();
+          this.useDynamite();
+        });
       }
 
-      async init() {
-        try {
-          this.minerSprite = await BackgroundRemover.loadTransparent('assets/miner.jpg');
-        } catch (e) {
-          console.log("Dùng đồ họa procedural thợ mỏ");
-        }
+      init() {
         this.start(0);
       }
 
       start(levelIndex = 0) {
-        this.currentLevelIdx = levelIndex;
-        const config = window.GOLD_LEVELS[this.currentLevelIdx] || window.GOLD_LEVELS[0];
+        this.currentLevelIdx = Math.min(levelIndex, this.campaigns.length - 1);
+        const camp = this.campaigns[this.currentLevelIdx];
         this.currentGold = 0;
-        this.timeLeft = config.time;
+        this.timeLeft = camp.time;
+        this.dynamiteCount = 2;
+        this.speedBuffTimer = 0;
         this.isRunning = true;
+
+        this.campaignTitle.textContent = camp.title;
+        this.campaignDesc.textContent = camp.desc;
 
         this.resetHook();
         this.spawnItems();
@@ -166,6 +352,14 @@
         this.timerId = setInterval(() => {
           if (!this.isRunning) return;
           this.timeLeft--;
+          if (this.speedBuffTimer > 0) {
+            this.speedBuffTimer--;
+            if (this.speedBuffTimer <= 0) {
+              this.buffTag.style.display = 'none';
+            } else {
+              this.buffTime.textContent = `${this.speedBuffTimer}s`;
+            }
+          }
           this.updateHud();
           if (this.timeLeft <= 0) {
             this.handleTimeUp();
@@ -195,75 +389,135 @@
         }
       }
 
+      useDynamite() {
+        if (!this.isRunning) return;
+        // Chỉ nổ được khi đang kéo một vật thể
+        if (this.hook.state === 'rewind' && this.hook.caughtItem) {
+          if (this.dynamiteCount > 0) {
+            this.dynamiteCount--;
+            this.updateHud();
+
+            const item = this.hook.caughtItem;
+            // Hiệu ứng nổ lớn
+            this.createExplosion(item.x, item.y, 35);
+            window.sound.playExplosion();
+
+            this.addFloatingText(item.x, item.y - 10, "💥 ĐÃ NỔ ĐÁ!", "#ff0055");
+
+            // Giải phóng móc ngay lập tức
+            this.hook.caughtItem = null;
+            this.hook.currentLength = this.hook.baseLength;
+            this.resetHook();
+          }
+        }
+      }
+
       spawnItems() {
         this.items = [];
         const w = this.canvas.width;
         const h = this.canvas.height;
 
+        // 1. KIM CƯƠNG TÀI TRỢ (💎 Siêu quý, siêu nhẹ, giá $600)
+        for (let i = 0; i < 2; i++) {
+          this.items.push({
+            x: 80 + Math.random() * (w - 160),
+            y: 200 + Math.random() * (h - 260),
+            radius: 16,
+            value: 600,
+            weight: 0.7,
+            type: 'diamond'
+          });
+        }
+
+        // 2. HÒM THUỐC CỨU TRỢ (💊 Sứ mệnh y tế: $350 + Thưởng 7s thời gian!)
+        for (let i = 0; i < 2; i++) {
+          this.items.push({
+            x: 90 + Math.random() * (w - 180),
+            y: 190 + Math.random() * (h - 250),
+            radius: 22,
+            value: 350,
+            bonusTime: 7,
+            weight: 1.4,
+            type: 'med-chest'
+          });
+        }
+
+        // 3. THỎI VÀNG CÁC KÍCH THƯỚC (Vàng nhỏ, vừa, lớn)
         // Vàng nhỏ
         for (let i = 0; i < 4; i++) {
           this.items.push({
-            x: 80 + Math.random() * (w - 160),
-            y: 160 + Math.random() * (h - 220),
-            radius: 16,
+            x: 70 + Math.random() * (w - 140),
+            y: 160 + Math.random() * (h - 230),
+            radius: 17,
             value: 100,
             weight: 1.2,
             type: 'gold-sm'
           });
         }
-
         // Vàng vừa
         for (let i = 0; i < 3; i++) {
           this.items.push({
             x: 80 + Math.random() * (w - 160),
-            y: 190 + Math.random() * (h - 250),
-            radius: 25,
+            y: 210 + Math.random() * (h - 270),
+            radius: 26,
             value: 250,
             weight: 2.2,
             type: 'gold-md'
           });
         }
-
         // Vàng lớn
         for (let i = 0; i < 2; i++) {
           this.items.push({
-            x: 90 + Math.random() * (w - 180),
-            y: 230 + Math.random() * (h - 280),
+            x: 100 + Math.random() * (w - 200),
+            y: 240 + Math.random() * (h - 300),
             radius: 36,
             value: 500,
-            weight: 4.5,
+            weight: 4.2,
             type: 'gold-lg'
           });
         }
 
-        // Đá tảng
+        // 4. HỘP QUÀ NHÀ TÀI TRỢ BÍ ẨN (🎁 Chứa Dynamite, Nước tăng lực hoặc $500)
+        for (let i = 0; i < 2; i++) {
+          this.items.push({
+            x: 100 + Math.random() * (w - 200),
+            y: 180 + Math.random() * (h - 250),
+            radius: 20,
+            value: 200,
+            weight: 1.2,
+            type: 'gift-bag'
+          });
+        }
+
+        // 5. THÙNG THUỐC NỔ TNT NGẦM (💣 Nổ dọn đá xung quanh)
+        this.items.push({
+          x: 160 + Math.random() * (w - 320),
+          y: 220 + Math.random() * (h - 280),
+          radius: 24,
+          value: 10,
+          weight: 1.0,
+          type: 'tnt'
+        });
+
+        // 6. ĐÁ TẢNG CHƯỚNG NGẠI (🪨 Nặng, ít tiền)
         for (let i = 0; i < 3; i++) {
           this.items.push({
-            x: 80 + Math.random() * (w - 160),
-            y: 180 + Math.random() * (h - 240),
-            radius: 30,
-            value: 20,
+            x: 70 + Math.random() * (w - 140),
+            y: 190 + Math.random() * (h - 250),
+            radius: 28,
+            value: 25,
             weight: 5.5,
             type: 'rock'
           });
         }
-
-        // Túi may mắn bí ẩn
-        this.items.push({
-          x: 100 + Math.random() * (w - 200),
-          y: 200 + Math.random() * (h - 260),
-          radius: 20,
-          value: Math.floor(120 + Math.random() * 450),
-          weight: 1.5,
-          type: 'bag'
-        });
       }
 
       updateHud() {
-        const config = window.GOLD_LEVELS[this.currentLevelIdx] || { target: 650 };
+        const camp = this.campaigns[this.currentLevelIdx];
         this.levelHud.textContent = `Màn ${this.currentLevelIdx + 1}`;
-        this.goldHud.textContent = `Vàng: $${this.currentGold} / $${config.target}`;
+        this.goldHud.textContent = `Quỹ: $${this.currentGold} / $${camp.target}`;
         this.timeHud.textContent = `⏱ ${this.timeLeft}s`;
+        this.dynamiteHudCount.textContent = `x${this.dynamiteCount}`;
       }
 
       loop() {
@@ -276,6 +530,7 @@
       update() {
         const h = this.hook;
 
+        // Góc lắc lư dây câu
         if (h.state === 'swing') {
           h.angle += h.angleSpeed * h.angleDir;
           if (h.angle > 1.25) {
@@ -291,7 +546,7 @@
           const hookX = this.origin.x + Math.sin(h.angle) * h.currentLength;
           const hookY = this.origin.y + Math.cos(h.angle) * h.currentLength;
 
-          // Chạm mép canvas
+          // Va chạm mép tường
           if (
             hookX < 20 || hookX > this.canvas.width - 20 ||
             hookY > this.canvas.height - 20 ||
@@ -300,21 +555,35 @@
             h.state = 'rewind';
           }
 
-          // Va chạm với vật thể
+          // Va chạm vật thể dưới đất
           for (let i = 0; i < this.items.length; i++) {
             const it = this.items[i];
             const dist = Math.hypot(hookX - it.x, hookY - it.y);
             if (dist < it.radius + 12) {
+              this.items.splice(i, 1);
+
+              // Nếu bắn trúng thùng TNT -> Nổ tung!
+              if (it.type === 'tnt') {
+                this.triggerTNTExplosion(it.x, it.y);
+                h.state = 'rewind';
+                h.caughtItem = null;
+                break;
+              }
+
               window.sound.playClick();
               h.caughtItem = it;
-              this.items.splice(i, 1);
               h.state = 'rewind';
               break;
             }
           }
         } else if (h.state === 'rewind') {
-          const weightFactor = h.caughtItem ? h.caughtItem.weight : 0.8;
-          const rewindSpeed = Math.max(2.5, h.speed / weightFactor);
+          let weightFactor = h.caughtItem ? h.caughtItem.weight : 0.8;
+          // Nếu đang có buff Nước Tăng Lực -> Kéo cực nhanh
+          if (this.speedBuffTimer > 0) {
+            weightFactor = Math.min(1.0, weightFactor * 0.4);
+          }
+
+          const rewindSpeed = Math.max(2.8, (h.speed * (this.speedBuffTimer > 0 ? 1.6 : 1.0)) / weightFactor);
           h.currentLength -= rewindSpeed;
 
           if (h.caughtItem) {
@@ -322,13 +591,118 @@
             h.caughtItem.y = this.origin.y + Math.cos(h.angle) * h.currentLength;
           }
 
+          // Thu móc về tới bệ kéo
           if (h.currentLength <= h.baseLength) {
             if (h.caughtItem) {
-              window.sound.playCoin();
-              this.currentGold += h.caughtItem.value;
-              this.updateHud();
+              this.handleItemLanded(h.caughtItem);
             }
             this.resetHook();
+          }
+        }
+
+        // Cập nhật hiệu ứng hạt & chữ bay
+        this.updateEffects();
+      }
+
+      triggerTNTExplosion(tntX, tntY) {
+        this.createExplosion(tntX, tntY, 50);
+        window.sound.playExplosion();
+        this.addFloatingText(tntX, tntY - 15, "💣 TNT PHÁ NỔ!", "#ff0055");
+
+        // Nổ phá các tảng đá xung quanh trong bán kính 110px
+        for (let i = this.items.length - 1; i >= 0; i--) {
+          const it = this.items[i];
+          const d = Math.hypot(it.x - tntX, it.y - tntY);
+          if (d < 110 && it.type === 'rock') {
+            this.createExplosion(it.x, it.y, 20);
+            this.items.splice(i, 1);
+          }
+        }
+      }
+
+      handleItemLanded(item) {
+        if (item.type === 'diamond') {
+          window.sound.playDiamond();
+          this.currentGold += item.value;
+          this.addFloatingText(this.origin.x, this.origin.y - 20, `+$${item.value} 💎 KIM CƯƠNG!`, '#06d6a0');
+        } else if (item.type === 'med-chest') {
+          window.sound.playCoin();
+          this.currentGold += item.value;
+          this.timeLeft += item.bonusTime;
+          this.addFloatingText(this.origin.x, this.origin.y - 20, `+$${item.value} 💊 +${item.bonusTime}s THỜI GIAN!`, '#e63946');
+        } else if (item.type === 'gift-bag') {
+          window.sound.playPowerup();
+          const r = Math.random();
+          if (r < 0.35) {
+            // Tặng thuốc nổ
+            this.dynamiteCount++;
+            this.addFloatingText(this.origin.x, this.origin.y - 20, `🎁 +1 THUỐC NỔ DYNAMITE! 🧨`, '#ff8c38');
+          } else if (r < 0.7) {
+            // Tặng nước tăng lực kéo siêu tốc
+            this.speedBuffTimer = 12;
+            this.buffTag.style.display = 'flex';
+            this.buffTime.textContent = `${this.speedBuffTimer}s`;
+            this.addFloatingText(this.origin.x, this.origin.y - 20, `⚡ TĂNG TỐC KÉO X2 (12s)!`, '#ffd166');
+          } else {
+            // Tiền tài trợ khủng
+            const bigGold = 500;
+            this.currentGold += bigGold;
+            this.addFloatingText(this.origin.x, this.origin.y - 20, `🎁 TÀI TRỢ KHỦNG +$${bigGold}!`, '#059669');
+          }
+        } else {
+          // Vàng hoặc đá
+          window.sound.playCoin();
+          this.currentGold += item.value;
+          this.addFloatingText(this.origin.x, this.origin.y - 20, `+$${item.value}`, item.type === 'rock' ? '#adb5bd' : '#ffb703');
+        }
+
+        this.updateHud();
+      }
+
+      createExplosion(x, y, count = 30) {
+        for (let i = 0; i < count; i++) {
+          this.particles.push({
+            x: x,
+            y: y,
+            vx: (Math.random() - 0.5) * 220,
+            vy: (Math.random() - 0.5) * 220,
+            color: ['#e63946', '#ff8c38', '#ffd166', '#ffffff'][Math.floor(Math.random() * 4)],
+            size: Math.random() * 6 + 3,
+            life: 0.6
+          });
+        }
+      }
+
+      addFloatingText(x, y, text, color = '#ffd166') {
+        this.floatingTexts.push({
+          x: x,
+          y: y,
+          text: text,
+          color: color,
+          alpha: 1.0,
+          vy: -1.4
+        });
+      }
+
+      updateEffects() {
+        // Hạt nổ
+        for (let i = this.particles.length - 1; i >= 0; i--) {
+          const pt = this.particles[i];
+          pt.x += pt.vx * 0.016;
+          pt.y += pt.vy * 0.016;
+          pt.life -= 0.02;
+          if (pt.life <= 0) {
+            this.particles.splice(i, 1);
+          }
+        }
+
+        // Chữ bay
+        for (let i = this.floatingTexts.length - 1; i >= 0; i--) {
+          const ft = this.floatingTexts[i];
+          ft.y += ft.vy;
+          ft.alpha -= 0.018;
+          if (ft.alpha <= 0) {
+            this.floatingTexts.splice(i, 1);
           }
         }
       }
@@ -336,147 +710,362 @@
       draw() {
         const w = this.canvas.width;
         const h = this.canvas.height;
-        this.ctx.clearRect(0, 0, w, h);
+        const ctx = this.ctx;
+        ctx.clearRect(0, 0, w, h);
 
-        // Nền mặt đất bên trên
-        this.ctx.fillStyle = '#fff0eb';
-        this.ctx.fillRect(0, 0, w, 110);
+        // 1. Mặt đất tầng trên (Nền trời + mặt bệ máy)
+        const skyGrad = ctx.createLinearGradient(0, 0, 0, 115);
+        skyGrad.addColorStop(0, '#fff3ed');
+        skyGrad.addColorStop(1, '#ffdfd3');
+        ctx.fillStyle = skyGrad;
+        ctx.fillRect(0, 0, w, 115);
 
-        // Lòng đất
-        const earthGrad = this.ctx.createLinearGradient(0, 110, 0, h);
-        earthGrad.addColorStop(0, '#7f4f24');
-        earthGrad.addColorStop(1, '#582f0e');
-        this.ctx.fillStyle = earthGrad;
-        this.ctx.fillRect(0, 110, w, h - 110);
+        // 2. Lòng đất sâu (Gradient giàu tầng khoáng sản)
+        const earthGrad = ctx.createLinearGradient(0, 115, 0, h);
+        earthGrad.addColorStop(0, '#5c3818');
+        earthGrad.addColorStop(0.3, '#43230c');
+        earthGrad.addColorStop(0.7, '#341a08');
+        earthGrad.addColorStop(1, '#241004');
+        ctx.fillStyle = earthGrad;
+        ctx.fillRect(0, 115, w, h - 115);
 
-        // Đường mặt đất
-        this.ctx.strokeStyle = '#936639';
-        this.ctx.lineWidth = 4;
-        this.ctx.beginPath();
-        this.ctx.moveTo(0, 110);
-        this.ctx.lineTo(w, 110);
-        this.ctx.stroke();
+        // Đốm quặng khoáng lấp lánh trong đất
+        ctx.fillStyle = 'rgba(255, 220, 150, 0.15)';
+        ctx.fillRect(80, 170, 120, 2);
+        ctx.fillRect(340, 240, 90, 2);
+        ctx.fillRect(600, 320, 140, 2);
+        ctx.fillRect(160, 390, 110, 2);
 
-        // Vẽ các vật thể dưới đất
+        // 3. Đường ranh giới mặt đất & cỏ xanh
+        ctx.fillStyle = '#2d6a4f';
+        ctx.fillRect(0, 110, w, 6);
+        ctx.fillStyle = '#52b788';
+        ctx.fillRect(0, 110, w, 2.5);
+
+        // 4. Vẽ các vật phẩm dưới lòng đất sắc nét
         this.items.forEach(it => this.drawItem(it));
         if (this.hook.caughtItem) {
           this.drawItem(this.hook.caughtItem);
         }
 
-        // Vẽ dây câu
+        // 5. Vẽ dây câu
         const hookTipX = this.origin.x + Math.sin(this.hook.angle) * this.hook.currentLength;
         const hookTipY = this.origin.y + Math.cos(this.hook.angle) * this.hook.currentLength;
 
-        this.ctx.strokeStyle = '#2b2d42';
-        this.ctx.lineWidth = 2.5;
-        this.ctx.beginPath();
-        this.ctx.moveTo(this.origin.x, this.origin.y);
-        this.ctx.lineTo(hookTipX, hookTipY);
-        this.ctx.stroke();
+        // Dây thép bện xoắn
+        ctx.strokeStyle = '#2b2d42';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.moveTo(this.origin.x, this.origin.y);
+        ctx.lineTo(hookTipX, hookTipY);
+        ctx.stroke();
 
-        // Vẽ đầu móc
-        this.ctx.save();
-        this.ctx.translate(hookTipX, hookTipY);
-        this.ctx.rotate(-this.hook.angle);
-        this.ctx.fillStyle = '#495057';
-        this.ctx.beginPath();
-        this.ctx.arc(0, 0, 6, 0, Math.PI * 2);
-        this.ctx.fill();
+        // 6. Đầu móc câu cơ khí hợp kim sắc bén
+        ctx.save();
+        ctx.translate(hookTipX, hookTipY);
+        ctx.rotate(-this.hook.angle);
 
-        this.ctx.strokeStyle = '#343a40';
-        this.ctx.lineWidth = 3.5;
-        this.ctx.beginPath();
-        this.ctx.arc(-8, 6, 8, -Math.PI * 0.4, Math.PI * 0.5);
-        this.ctx.stroke();
-        this.ctx.beginPath();
-        this.ctx.arc(8, 6, 8, Math.PI * 0.5, Math.PI * 1.4);
-        this.ctx.stroke();
-        this.ctx.restore();
+        // Trục xoay móc
+        ctx.fillStyle = '#6c757d';
+        ctx.beginPath();
+        ctx.arc(0, 0, 7, 0, Math.PI * 2);
+        ctx.fill();
 
-        // Vẽ thợ mỏ
-        this.drawMiner();
+        // 2 Ngàm móc thép mạ crom bóng bẩy
+        ctx.strokeStyle = '#e9ecef';
+        ctx.lineWidth = 3.5;
+        ctx.beginPath();
+        ctx.arc(-9, 7, 9, -Math.PI * 0.45, Math.PI * 0.55);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(9, 7, 9, Math.PI * 0.45, Math.PI * 1.45);
+        ctx.stroke();
+
+        ctx.restore();
+
+        // 7. Vẽ Thủ quỹ Áo Đỏ và Cỗ máy kéo vàng
+        this.drawMinerHQ();
+
+        // 8. Hạt hiệu ứng nổ
+        this.particles.forEach(pt => {
+          ctx.fillStyle = pt.color;
+          ctx.beginPath();
+          ctx.arc(pt.x, pt.y, pt.size * (pt.life > 0.3 ? 1 : pt.life * 3), 0, Math.PI * 2);
+          ctx.fill();
+        });
+
+        // 9. Hiệu ứng văn bản bay
+        this.floatingTexts.forEach(ft => {
+          ctx.save();
+          ctx.globalAlpha = Math.max(0, ft.alpha);
+          ctx.fillStyle = ft.color;
+          ctx.font = 'bold 15px Outfit, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.6)';
+          ctx.shadowBlur = 4;
+          ctx.fillText(ft.text, ft.x, ft.y);
+          ctx.restore();
+        });
       }
 
+      /**
+       * VẼ CÁC VẬT PHẨM LÒNG ĐẤT SIÊU SẮC NÉT
+       */
       drawItem(it) {
-        this.ctx.save();
-        if (it.type.startsWith('gold')) {
-          this.ctx.fillStyle = '#ffb703';
-          this.ctx.strokeStyle = '#fb8500';
-          this.ctx.lineWidth = 3;
-          this.ctx.beginPath();
-          this.ctx.arc(it.x, it.y, it.radius, 0, Math.PI * 2);
-          this.ctx.fill();
-          this.ctx.stroke();
+        const ctx = this.ctx;
+        ctx.save();
+        ctx.translate(it.x, it.y);
 
-          this.ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-          this.ctx.beginPath();
-          this.ctx.arc(it.x - it.radius * 0.35, it.y - it.radius * 0.35, it.radius * 0.3, 0, Math.PI * 2);
-          this.ctx.fill();
-        } else if (it.type === 'rock') {
-          this.ctx.fillStyle = '#6c757d';
-          this.ctx.strokeStyle = '#495057';
-          this.ctx.lineWidth = 3;
-          this.ctx.beginPath();
-          this.ctx.arc(it.x, it.y, it.radius, 0, Math.PI * 2);
-          this.ctx.fill();
-          this.ctx.stroke();
-        } else if (it.type === 'bag') {
-          this.ctx.fillStyle = '#e63946';
-          this.ctx.beginPath();
-          this.ctx.arc(it.x, it.y, it.radius, 0, Math.PI * 2);
-          this.ctx.fill();
-          this.ctx.fillStyle = '#ffffff';
-          this.ctx.font = 'bold 16px sans-serif';
-          this.ctx.textAlign = 'center';
-          this.ctx.fillText('?', it.x, it.y + 5);
+        if (it.type === 'diamond') {
+          // 💎 KIM CƯƠNG TÀI TRỢ LẤP LÁNH
+          ctx.fillStyle = '#48cae4';
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(0, -it.radius);
+          ctx.lineTo(it.radius, -it.radius * 0.2);
+          ctx.lineTo(0, it.radius);
+          ctx.lineTo(-it.radius, -it.radius * 0.2);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+
+          // Mặt cắt phản quang
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+          ctx.beginPath();
+          ctx.moveTo(0, -it.radius);
+          ctx.lineTo(it.radius * 0.4, -it.radius * 0.2);
+          ctx.lineTo(0, 0);
+          ctx.lineTo(-it.radius * 0.4, -it.radius * 0.2);
+          ctx.closePath();
+          ctx.fill();
+
+          // Tia sáng nhấp nháy
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath();
+          ctx.arc(it.radius * 0.3, -it.radius * 0.4, 2.5, 0, Math.PI * 2);
+          ctx.fill();
+        } else if (it.type === 'med-chest') {
+          // 💊 HÒM THUỐC CỨU TRỢ VIỆN TRỢ
+          const w = it.radius * 1.8;
+          const h = it.radius * 1.3;
+          ctx.fillStyle = '#ffffff';
+          ctx.strokeStyle = '#e63946';
+          ctx.lineWidth = 2.5;
+          ctx.beginPath();
+          ctx.roundRect(-w/2, -h/2, w, h, 4);
+          ctx.fill();
+          ctx.stroke();
+
+          // Chữ thập đỏ nổi bật
+          ctx.fillStyle = '#e63946';
+          ctx.fillRect(-3, -h/2 + 4, 6, h - 8);
+          ctx.fillRect(-w/2 + 6, -3, w - 12, 6);
+
+          // Quai xách
+          ctx.strokeStyle = '#2b2d42';
+          ctx.lineWidth = 2;
+          ctx.strokeRect(-6, -h/2 - 4, 12, 4);
+        } else if (it.type === 'gift-bag') {
+          // 🎁 TÚI QUÀ NHÀ TÀI TRỢ BÍ ẨN
+          ctx.fillStyle = '#e63946';
+          ctx.beginPath();
+          ctx.arc(0, 2, it.radius, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Nơ thắt vàng
+          ctx.fillStyle = '#ffd166';
+          ctx.beginPath();
+          ctx.moveTo(-10, -it.radius + 2);
+          ctx.lineTo(10, -it.radius + 2);
+          ctx.lineTo(0, -it.radius + 10);
+          ctx.closePath();
+          ctx.fill();
+
+          // Dấu hỏi vàng
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 16px Outfit, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('?', 0, 7);
+        } else if (it.type === 'tnt') {
+          // 💣 THÙNG THUỐC NỔ TNT
+          const s = it.radius * 1.6;
+          ctx.fillStyle = '#c1121f';
+          ctx.strokeStyle = '#ffb703';
+          ctx.lineWidth = 2.5;
+          ctx.beginPath();
+          ctx.roundRect(-s/2, -s/2, s, s, 4);
+          ctx.fill();
+          ctx.stroke();
+
+          // Nhãn TNT
+          ctx.fillStyle = '#ffd166';
+          ctx.font = 'bold 12px Outfit, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('TNT', 0, 4);
+
+          // Ngòi nổ
+          ctx.strokeStyle = '#ffea00';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(0, -s/2);
+          ctx.quadraticCurveTo(6, -s/2 - 8, 10, -s/2 - 6);
+          ctx.stroke();
+        } else if (it.type.startsWith('gold')) {
+          // 💰 THỎI VÀNG CÁC CỠ SẮC NÉT
+          const r = it.radius;
+          const goldGrad = ctx.createRadialGradient(-r * 0.3, -r * 0.3, r * 0.1, 0, 0, r);
+          goldGrad.addColorStop(0, '#fff3b0');
+          goldGrad.addColorStop(0.4, '#ffb703');
+          goldGrad.addColorStop(1, '#e07a00');
+          ctx.fillStyle = goldGrad;
+          ctx.strokeStyle = '#fca311';
+          ctx.lineWidth = 2.5;
+          ctx.beginPath();
+          ctx.arc(0, 0, r, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+
+          // Vệt sáng bóng loáng
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.65)';
+          ctx.beginPath();
+          ctx.arc(-r * 0.35, -r * 0.35, r * 0.28, 0, Math.PI * 2);
+          ctx.fill();
+        } else {
+          // 🪨 ĐÁ TẢNG GÓC CẠNH
+          const r = it.radius;
+          ctx.fillStyle = '#6c757d';
+          ctx.strokeStyle = '#495057';
+          ctx.lineWidth = 3;
+          ctx.beginPath();
+          ctx.moveTo(-r * 0.8, -r * 0.5);
+          ctx.lineTo(0, -r);
+          ctx.lineTo(r * 0.9, -r * 0.4);
+          ctx.lineTo(r, r * 0.6);
+          ctx.lineTo(r * 0.2, r);
+          ctx.lineTo(-r * 0.9, r * 0.7);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+
+          // Vân rạn nứt
+          ctx.strokeStyle = '#343a40';
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.moveTo(-r * 0.3, -r * 0.2);
+          ctx.lineTo(r * 0.3, r * 0.2);
+          ctx.stroke();
         }
-        this.ctx.restore();
+
+        ctx.restore();
       }
 
-      drawMiner() {
+      /**
+       * THỦ QUỸ ÁO ĐỎ & MÁY TỜI CƠ KHÍ SẮC NÉT
+       */
+      drawMinerHQ() {
+        const ctx = this.ctx;
         const ox = this.origin.x;
         const oy = this.origin.y;
 
-        // Bệ kéo máy móc
-        this.ctx.fillStyle = '#343a40';
-        this.ctx.fillRect(ox - 35, oy - 12, 70, 16);
+        ctx.save();
 
-        // Bánh xe
-        this.ctx.fillStyle = '#adb5bd';
-        this.ctx.beginPath();
-        this.ctx.arc(ox - 24, oy + 4, 7, 0, Math.PI * 2);
-        this.ctx.arc(ox + 24, oy + 4, 7, 0, Math.PI * 2);
-        this.ctx.fill();
+        // 1. Cỗ máy tời ròng rọc
+        ctx.fillStyle = '#2b2d42';
+        ctx.beginPath();
+        ctx.roundRect(ox - 38, oy - 14, 76, 20, 4);
+        ctx.fill();
 
-        if (this.minerSprite) {
-          // Vẽ sprite nhân vật thợ mỏ đã tách nền
-          this.ctx.drawImage(this.minerSprite, ox - 26, oy - 62, 52, 52);
-        } else {
-          // Thợ mỏ áo đỏ tình nguyện procedural
-          this.ctx.fillStyle = '#e63946';
-          this.ctx.beginPath();
-          this.ctx.roundRect(ox - 15, oy - 46, 30, 32, 6);
-          this.ctx.fill();
+        // Bánh răng quay
+        const gearAngle = this.hook.currentLength * 0.15;
+        ctx.save();
+        ctx.translate(ox, oy);
+        ctx.rotate(gearAngle);
+        ctx.fillStyle = '#ffd166';
+        ctx.beginPath();
+        ctx.arc(0, 0, 10, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#c1121f';
+        ctx.beginPath();
+        ctx.arc(0, 0, 4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
 
-          this.ctx.fillStyle = '#ffffff';
-          this.ctx.fillRect(ox - 3, oy - 38, 6, 14);
-          this.ctx.fillRect(ox - 8, oy - 34, 16, 6);
+        // Chân giá đỡ máy tời
+        ctx.strokeStyle = '#495057';
+        ctx.lineWidth = 3.5;
+        ctx.beginPath();
+        ctx.moveTo(ox - 30, oy + 6);
+        ctx.lineTo(ox - 38, 110);
+        ctx.moveTo(ox + 30, oy + 6);
+        ctx.lineTo(ox + 38, 110);
+        ctx.stroke();
 
-          this.ctx.fillStyle = '#ffdfba';
-          this.ctx.beginPath();
-          this.ctx.arc(ox, oy - 54, 11, 0, Math.PI * 2);
-          this.ctx.fill();
+        // 2. Nhân vật Thủ quỹ Tình nguyện Áo đỏ
+        // Thân áo đỏ
+        ctx.fillStyle = '#e63946';
+        ctx.beginPath();
+        ctx.roundRect(ox - 16, oy - 50, 32, 34, 6);
+        ctx.fill();
 
-          this.ctx.fillStyle = '#ffb703';
-          this.ctx.beginPath();
-          this.ctx.arc(ox, oy - 58, 12, Math.PI, Math.PI * 2);
-          this.ctx.fill();
-        }
+        // Biểu tượng chữ thập trắng tình nguyện
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(ox - 2, oy - 42, 4, 12);
+        ctx.fillRect(ox - 6, oy - 38, 12, 4);
+
+        // Cổ áo
+        ctx.fillStyle = '#c1121f';
+        ctx.beginPath();
+        ctx.moveTo(ox - 8, oy - 50);
+        ctx.lineTo(ox, oy - 45);
+        ctx.lineTo(ox + 8, oy - 50);
+        ctx.fill();
+
+        // Đầu anime
+        ctx.fillStyle = '#ffe0bd';
+        ctx.beginPath();
+        ctx.arc(ox, oy - 60, 12, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Mắt & Kính tri thức của Thủ Quỹ
+        ctx.strokeStyle = '#2b2d42';
+        ctx.lineWidth = 1.8;
+        ctx.strokeRect(ox - 9, oy - 64, 7, 6);
+        ctx.strokeRect(ox + 2, oy - 64, 7, 6);
+        ctx.beginPath();
+        ctx.moveTo(ox - 2, oy - 61);
+        ctx.lineTo(ox + 2, oy - 61);
+        ctx.stroke();
+
+        // Nụ cười tự tin
+        ctx.strokeStyle = '#e63946';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(ox, oy - 56, 3.5, 0, Math.PI);
+        ctx.stroke();
+
+        // Mũ bảo hộ vàng hoặc nón tình nguyện
+        ctx.fillStyle = '#ffb703';
+        ctx.beginPath();
+        ctx.arc(ox, oy - 65, 13, Math.PI, Math.PI * 2);
+        ctx.fill();
+        ctx.fillRect(ox - 15, oy - 66, 30, 3);
+
+        // Cánh tay quay cần gạt
+        ctx.strokeStyle = '#ffe0bd';
+        ctx.lineWidth = 5;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(ox + 10, oy - 40);
+        ctx.lineTo(ox + 22, oy - 26);
+        ctx.stroke();
+
+        ctx.restore();
       }
 
       handleTimeUp() {
         this.stop();
-        const config = window.GOLD_LEVELS[this.currentLevelIdx] || { target: 650 };
+        const camp = this.campaigns[this.currentLevelIdx];
         const modal = document.getElementById('game-modal');
         const modalIcon = document.getElementById('modal-icon');
         const modalTitle = document.getElementById('modal-title');
@@ -484,48 +1073,48 @@
         const modalStat = document.getElementById('modal-stat-box');
         const actionBtn = document.getElementById('btn-modal-action');
 
-        if (this.currentGold >= config.target) {
+        if (this.currentGold >= camp.target) {
           window.sound.playWin();
           const nextLvl = this.currentLevelIdx + 1;
-          if (nextLvl < window.GOLD_LEVELS.length) {
+          if (nextLvl < this.campaigns.length) {
             modalIcon.textContent = '🎉';
-            modalTitle.textContent = 'Qua màn xuất sắc!';
-            modalDesc.innerHTML = `Bạn đã gây quỹ được <strong>$${this.currentGold}</strong> (Mục tiêu: $${config.target})! Sẵn sàng tiến vào màn tiếp theo?`;
-            modalStat.innerHTML = `<div>Chặng tiếp: Màn ${nextLvl + 1} - Mục tiêu: $${window.GOLD_LEVELS[nextLvl].target}</div>`;
-            actionBtn.textContent = 'Tiến vào màn tiếp theo ➔';
+            modalTitle.textContent = 'Hoàn Thành Xuất Sắc Chiến Dịch!';
+            modalDesc.innerHTML = `Chúc mừng bạn! Bạn đã gây quỹ thành công <strong>$${this.currentGold}</strong> (Mục tiêu: $${camp.target}) để mua thuốc và hỗ trợ bà con!`;
+            modalStat.innerHTML = `<div>Chiến dịch tiếp theo: <strong>${this.campaigns[nextLvl].title}</strong></div><div>Mục tiêu tài trợ: <strong>$${this.campaigns[nextLvl].target}</strong></div>`;
+            actionBtn.textContent = 'Tiến vào Chiến Dịch Tiếp Theo ➔';
             actionBtn.onclick = () => {
               modal.classList.remove('active');
               this.start(nextLvl);
             };
-            modal.classList.add('active');
           } else {
             modalIcon.textContent = '🏆';
-            modalTitle.textContent = 'Thần tài Gây quỹ!';
-            modalDesc.textContent = 'Chúc mừng bạn đã hoàn thành tất cả các màn chơi gây quỹ tình nguyện của Ban Tài chính!';
-            modalStat.innerHTML = `<div>Tổng ngân quỹ gom được: <strong>$${this.currentGold}</strong></div>`;
+            modalTitle.textContent = 'Đại Sứ Quỹ Từ Thiện Toàn Năng!';
+            modalDesc.textContent = 'Xuất sắc tuyệt vời! Bạn đã hoàn thành toàn bộ 4 Chiến dịch tài chính lớn, đặt nền móng xây dựng trạm y tế vững chắc cho đồng bào!';
+            modalStat.innerHTML = `<div>Tổng ngân quỹ gây dựng: <strong>$${this.currentGold}</strong></div><div>Danh hiệu: <strong>Thần Tài Áo Đỏ Vĩ Đại 🌟</strong></div>`;
             actionBtn.textContent = 'Chơi lại từ đầu';
             actionBtn.onclick = () => {
               modal.classList.remove('active');
               this.start(0);
             };
-            modal.classList.add('active');
           }
         } else {
           window.sound.playHit();
           modalIcon.textContent = '💔';
-          modalTitle.textContent = 'Chưa đạt mục tiêu!';
-          modalDesc.innerHTML = `Bạn thu được <strong>$${this.currentGold}</strong> / $${config.target}. Đừng nản lòng, hãy thử lại nào!`;
-          modalStat.innerHTML = `<div>Thiếu: <strong>$${config.target - this.currentGold}</strong></div>`;
+          modalTitle.textContent = 'Chiến Dịch Chưa Đạt Mục Tiêu!';
+          modalDesc.innerHTML = `Bạn thu được <strong>$${this.currentGold}</strong> / $${camp.target}. Còn thiếu một chút nữa thôi, cùng cố gắng gom đủ kinh phí nhé!`;
+          modalStat.innerHTML = `<div>Số tiền còn thiếu: <strong>$${camp.target - this.currentGold}</strong></div>`;
           actionBtn.textContent = 'Thử sức lại';
           actionBtn.onclick = () => {
             modal.classList.remove('active');
             this.start(this.currentLevelIdx);
           };
-          modal.classList.add('active');
         }
+
+        modal.classList.add('active');
       }
     }
 
+    // Khởi động game
     window.addEventListener('DOMContentLoaded', () => {
       const game = new MinerGameApp();
       game.init();
