@@ -334,18 +334,20 @@
 
         // Quãng đường (mét) và tốc độ
         this.distanceMeters = 0;
-        this.baseSpeed = 340; // pixel mỗi giây
+        this.meterRate = 0.10; // Tỷ lệ quy đổi: 1km mất ~25-30 giây (khoảng 2 phút cho cả hành trình 5km)
+        this.groundOffset = 0; // Tọa độ cuộn mặt đường trực quan theo pixel
+        this.baseSpeed = 320; // pixel mỗi giây
         this.currentSpeed = this.baseSpeed;
 
         // Khung thời gian Delta Time
         this.lastFrameTime = performance.now();
 
         // 5 Cấp độ phương tiện:
-        // 0: 0.0 - 1.0 km -> Chạy bộ 🏃
-        // 1: 1.0 - 2.0 km -> Xe đạp 🚲
-        // 2: 2.0 - 3.0 km -> Xe máy 🛵
-        // 3: 3.0 - 4.0 km -> Mô tô PKL 🏍️
-        // 4: 4.0 - 5.0 km -> Ô tô cứu trợ 🚗
+        // 0: 0.0 - 1.0 km -> Chạy bộ 🏃 (~31s)
+        // 1: 1.0 - 2.0 km -> Xe đạp 🚲 (~27s)
+        // 2: 2.0 - 3.0 km -> Xe máy 🛵 (~24s)
+        // 3: 3.0 - 4.0 km -> Mô tô PKL 🏍️ (~21s)
+        // 4: 4.0 - 5.0 km -> Ô tô cứu trợ 🚗 (~19s)
         // 5: >= 5.0 km    -> Máy bay & Chiến thắng ✈️
         this.vehicleLevel = 0;
         this.lastReachedLevel = 0;
@@ -369,7 +371,7 @@
 
         // Danh sách chướng ngại vật & hiệu ứng
         this.obstacles = [];
-        this.obstacleSpawnDist = 320;
+        this.obstacleSpawnDist = 110;
         this.lastSpawnDist = 0;
 
         // Biển báo cột mốc dọc đường
@@ -443,10 +445,18 @@
         this.isVictory = false;
         this.distanceMeters = startMeters;
         this.checkpointMeters = Math.floor(startMeters / 1000) * 1000;
+        this.groundOffset = 0;
         
+        // Khởi tạo lại biển báo cột mốc (bỏ qua các mốc đã vượt qua nếu hồi sinh)
+        this.milestoneSigns = [];
+        this.spawnedSignMilestones = new Set();
+        for (let m = 1; m <= Math.floor(startMeters / 1000); m++) {
+          this.spawnedSignMilestones.add(m);
+        }
+
         this.updateVehicleLevel(true);
 
-        this.currentSpeed = this.baseSpeed + (this.vehicleLevel * 50);
+        this.currentSpeed = this.baseSpeed + (this.vehicleLevel * 45);
         this.player.y = this.groundY;
         this.player.vy = 0;
         this.player.isGrounded = true;
@@ -456,6 +466,7 @@
 
         this.obstacles = [];
         this.lastSpawnDist = this.distanceMeters;
+        this.obstacleSpawnDist = 110;
         this.particles = [];
         this.windStreaks = [];
 
@@ -490,9 +501,12 @@
       }
 
       update(dt) {
-        // Cập nhật quãng đường
+        // Cập nhật quãng đường (tỷ lệ 0.10: mỗi 1km mất ~25-30 giây)
         const prevMeters = this.distanceMeters;
-        this.distanceMeters += this.currentSpeed * dt * 0.45;
+        this.distanceMeters += this.currentSpeed * dt * this.meterRate;
+
+        // Cuộn mặt đường trực quan theo pixel
+        this.groundOffset = (this.groundOffset + this.currentSpeed * dt) % 120000;
 
         // Cập nhật HUD Quãng đường & Tốc độ
         const km = (this.distanceMeters / 1000).toFixed(2);
@@ -533,8 +547,8 @@
         }
 
         // Tốc độ tăng dần theo từng cấp độ phương tiện
-        const targetSpeed = this.baseSpeed + (this.vehicleLevel * 55) + Math.min(60, (this.distanceMeters % 1000) * 0.06);
-        this.currentSpeed += (targetSpeed - this.currentSpeed) * dt * 2.5;
+        const targetSpeed = this.baseSpeed + (this.vehicleLevel * 45) + Math.min(45, (this.distanceMeters % 1000) * 0.04);
+        this.currentSpeed += (targetSpeed - this.currentSpeed) * dt * 2.0;
 
         // Cập nhật vật lý nhảy của người chơi
         this.updatePlayerPhysics(dt);
@@ -720,8 +734,9 @@
         const nextKm = Math.floor(this.distanceMeters / 1000) + 1;
         if (nextKm <= 5 && !this.spawnedSignMilestones.has(nextKm)) {
           const targetDist = nextKm * 1000;
-          // Xuất hiện trước 120 mét
-          if (this.distanceMeters >= targetDist - 120) {
+          // Xuất hiện từ mép phải sao cho biển báo lướt đến đúng vị trí nhân vật khi đạt mốc targetDist
+          const spawnLeadDist = (this.canvas.width + 40 - this.player.x) * this.meterRate;
+          if (this.distanceMeters >= targetDist - spawnLeadDist) {
             this.spawnedSignMilestones.add(nextKm);
             const labels = ['', 'TRẠM 1KM: XE ĐẠP 🚲', 'TRẠM 2KM: XE MÁY 🛵', 'TRẠM 3KM: MÔ TÔ PKL 🏍️', 'TRẠM 4KM: Ô TÔ CỨU TRỢ 🚗', 'ĐÍCH SÂN BAY: 5KM ✈️'];
             this.milestoneSigns.push({
@@ -765,8 +780,8 @@
               type: chosen
             });
 
-            // Khoảng cách spawn tiếp theo tùy theo tốc độ
-            this.obstacleSpawnDist = 340 + Math.random() * 220 + (this.currentSpeed * 0.3);
+            // Khoảng cách spawn tiếp theo: khoảng 3.0 - 4.2 giây tùy theo tốc độ
+            this.obstacleSpawnDist = 80 + Math.random() * 45 + (this.currentSpeed * 0.08);
             this.lastSpawnDist = this.distanceMeters;
           }
         }
@@ -1017,9 +1032,9 @@
         ctx.fillStyle = roadGrad;
         ctx.fillRect(0, this.groundY, w, h - this.groundY);
 
-        // Vạch gờ bó vỉa hè (đỏ - trắng đan xen)
+        // Vạch gờ bó vỉa hè (đỏ - trắng đan xen cuộn mượt mà)
         const curbW = 40;
-        const curbOffset = Math.floor(this.distanceMeters * 4) % (curbW * 2);
+        const curbOffset = Math.floor(this.groundOffset) % (curbW * 2);
         for (let x = -curbOffset - curbW * 2; x < w + curbW * 2; x += curbW * 2) {
           ctx.fillStyle = '#e63946';
           ctx.fillRect(x, this.groundY, curbW, 6);
@@ -1027,9 +1042,9 @@
           ctx.fillRect(x + curbW, this.groundY, curbW, 6);
         }
 
-        // Vạch đứt tim đường màu vàng
+        // Vạch đứt tim đường màu vàng cuộn đồng bộ
         ctx.fillStyle = '#ffb703';
-        const dashOffset = Math.floor(this.distanceMeters * 3.5) % 60;
+        const dashOffset = Math.floor(this.groundOffset * 0.9) % 60;
         for (let x = -dashOffset; x < w; x += 60) {
           ctx.fillRect(x, this.groundY + 36, 32, 4);
         }
