@@ -7,7 +7,7 @@
 // Thông tin Câu Lạc Bộ
 const CLUB_CONFIG = {
   name: "CLB TÌNH NGUYỆN TRƯỜNG Y",
-  slogan: "Tuổi trẻ dấn thân • Sẻ chia yêu thương",
+  slogan: "Tình nguyện trường y - Sẻ chia nhiệt huyết, kết nối trái tim",
   logo: "assets/club-logo.png",
   primaryColor: "#e63946",
   accentColor: "#ff8c38",
